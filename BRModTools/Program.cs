@@ -19,14 +19,4 @@ namespace BRModTools
             Application.Run(new Form1());
         }
     }
-
-    class Solids
-    {
-
-    }
-
-    class Block
-    {
-
-    }
 }
