@@ -6,3 +6,4 @@ C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\bin\De
 C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\bin\Debug\BRModTools.pdb
 C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\obj\Debug\BRModTools.exe
 C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\obj\Debug\BRModTools.pdb
+C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\obj\Debug\BRModTools.Form1.resources

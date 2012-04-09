@@ -7,17 +7,18 @@ using System.Windows.Forms;
 using System.Xml;
 using System.IO;
 using System.Text;
+using System.Data;
 
 
 namespace BRModTools
 {
-    static class Program
+    public static class Program
     {
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        public static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -27,13 +28,16 @@ namespace BRModTools
             StreamWriter file = new StreamWriter("test.xml");
             file.WriteLine(output);
             file.Close();
+            DataSet set = new DataSet();
+            set.ReadXml(@"D:\Games\BlockadeRunner0.54.0\Blockade Runner 0.54.0\Mods\default\Solids.xml");
+            set.GetType();
         }
     }
     /// <summary>
     /// This class reads in xml files and creates the relevant storage objects
     /// In future it will take whole mod folders, atm just solids.xml
     /// </summary>
-    static class ModParser
+    public static class ModParser
     {
         /// <summary>
         /// Takes the solids xml file and parses it
@@ -42,7 +46,7 @@ namespace BRModTools
         public static Solids inputSolids()
         {
             //TODO Magic parameters, need a standardised list from ZanMgt
-            String[] solidParams= {"Mass","HP","Class","Render","Category","Tags","DescShort","DescLong","Flags","Geometry","Texture"};
+            String[] solidParams = { "Category", "Class", "DescLong", "DescShort", "Flags", "Geometry", "HP", "Mass", "Render", "Tags", "Texture" };
             Solids solids = new Solids();
             //TODO variable input location
             String xmlInput = new System.IO.StreamReader(@"D:\Games\BlockadeRunner0.54.0\Blockade Runner 0.54.0\Mods\default\Solids.xml").ReadToEnd();
@@ -96,12 +100,31 @@ namespace BRModTools
     /// The solids.xml storage object
     /// Holds a list of all block types along with any other data in the xml
     /// </summary>
-    class Solids
+    public class Solids
     {
+        public DataTable BlockTable = new DataTable("Blocks");
         ArrayList blocks;
+        //String[] solidParams = { "Mass", "HP", "Class", "Render", "Category", "Tags", "DescShort", "DescLong", "Flags", "Geometry", "Texture" };
+        String[] solidParams = { "Category", "Class", "DescLong", "DescShort", "Flags", "Geometry", "HP", "Mass", "Render", "Tags", "Texture" };
         public Solids()
         {
             blocks = new ArrayList();
+            
+        }
+        public void TableCreater()
+        {
+            BlockTable.Columns.Add("Name");
+            foreach (String param in solidParams)
+            {
+                BlockTable.Columns.Add(param);
+            }
+            ArrayList temp;
+            foreach (Block block in blocks)
+            {
+                temp =block.BlockProperties;
+                String name = block.Name; 
+                BlockTable.Rows.Add(name,((BlockProperty)temp[0]).Value, ((BlockProperty)temp[1]).Value, ((BlockProperty)temp[2]).Value, ((BlockProperty)temp[3]).Value, ((BlockProperty)temp[4]).Value, ((BlockProperty)temp[5]).Value, ((BlockProperty)temp[6]).Value, ((BlockProperty)temp[7]).Value, ((BlockProperty)temp[8]).Value, ((BlockProperty)temp[9]).Value, ((BlockProperty)temp[10]).Value);
+            }
         }
         /// <summary>
         /// Add new blocks to the list of blocks in Solids.
@@ -130,10 +153,10 @@ namespace BRModTools
     /// <summary>
     /// Stores a single block and all its properties
     /// </summary>
-    class Block
+    public class Block
     {
         public String Name { get; set; }
-        private ArrayList BlockProperties;
+        public ArrayList BlockProperties;
         private IComparer myComparer = new PropertyComparator();
 
         public Block(String name, String[] parameters)
@@ -149,8 +172,12 @@ namespace BRModTools
         public void setParam(String param, String value)
         {
             BlockProperties.Sort(myComparer);
+            if(param.Equals("Name")){Name=value;} else
+            {
             BlockProperty prop = (BlockProperty)BlockProperties[BlockProperties.BinarySearch(new BlockProperty(param), myComparer)];
             prop.Value = value;
+            }
+            
         }
 
         public String getXml()
