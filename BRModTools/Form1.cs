@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,36 +18,7 @@ namespace BRModTools
         public Form1()
         {
             InitializeComponent();
-            Solids solids = ModParser.inputSolids();
-            solids.TableCreater();
-            data = solids.BlockTable;
-            this.dataGridView1.DataSource = data;
-            
-            //solids.BlockTable.WriteXml(@"D:\Games\BlockadeRunner0.54.0\Blockade Runner 0.54.0\Mods\default\Solids3.xml");
         }
-
-       /* public Solids exportTable()
-        {
-            Solids output = new Solids();
-            foreach (DataRow row in data.Rows)
-            {
-                Block block=null;
-                foreach (String column in data.Columns)
-                {
-                    if (column.Equals("Name"))
-                    {
-                        block = new Block((String)row["Name"], solidParams);
-                    }
-                    else
-                    {
-                        block.setParam(column, (String)row[column]);
-                    }
-                }
-               
-
-            }
-            return output;
-        }*/
 
         public Solids exportTable()
         {
@@ -78,9 +50,41 @@ namespace BRModTools
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Solids output = exportTable();
-            ModWriter.outputSolids(output);
+            if (data != null)
+            {
+                Solids output = exportTable();
+                String xml = ModWriter.outputSolids(output);
+                SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+                saveFileDialog1.Filter = "Xml file|*.xml";
+                saveFileDialog1.Title = "Save the Solids File";
+                saveFileDialog1.ShowDialog();
 
+                if (saveFileDialog1.FileName != "")
+                {
+                    FileStream fs = (FileStream)saveFileDialog1.OpenFile();
+                    StreamWriter file = new StreamWriter(fs);
+                    file.WriteLine(xml);
+                    file.Close();
+                }
+            }
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Filter = "Xml Files|*.xml";
+            openFileDialog1.Title = "Select the solids xml file";
+            StreamReader stream = null;
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                stream = new StreamReader(openFileDialog1.FileName);
+                Solids solids = ModParser.inputSolids(stream);
+                solids.TableCreater();
+                data = solids.BlockTable;
+                this.dataGridView1.DataSource = data;
+            }
+            
         }
     }
 }

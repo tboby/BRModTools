@@ -23,14 +23,6 @@ namespace BRModTools
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
-            Solids solids = ModParser.inputSolids();
-            String output = ModWriter.outputSolids(solids);
-            StreamWriter file = new StreamWriter("test.xml");
-            file.WriteLine(output);
-            file.Close();
-            DataSet set = new DataSet();
-            set.ReadXml(@"D:\Games\BlockadeRunner0.54.0\Blockade Runner 0.54.0\Mods\default\Solids.xml");
-            set.GetType();
         }
     }
     /// <summary>
@@ -43,13 +35,14 @@ namespace BRModTools
         /// Takes the solids xml file and parses it
         /// </summary>
         /// <returns>The solids object containingall the content</returns>
-        public static Solids inputSolids()
+        public static Solids inputSolids(StreamReader stream)
         {
             //TODO Magic parameters, need a standardised list from ZanMgt
             String[] solidParams = { "Category", "Class", "DescLong", "DescShort", "Flags", "Geometry", "HP", "Mass", "Render", "Tags", "Texture" };
             Solids solids = new Solids();
             //TODO variable input location
-            String xmlInput = new System.IO.StreamReader(@"D:\Games\BlockadeRunner0.54.0\Blockade Runner 0.54.0\Mods\default\Solids.xml").ReadToEnd();
+            String xmlInput = stream.ReadToEnd();
+            //String xmlInput = new System.IO.StreamReader(@"D:\Games\BlockadeRunner0.54.0\Blockade Runner 0.54.0\Mods\default\Solids.xml").ReadToEnd();
 
             using (XmlReader reader = XmlReader.Create(new StringReader(xmlInput)))
             {
