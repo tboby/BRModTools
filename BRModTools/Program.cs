@@ -43,25 +43,31 @@ namespace BRModTools
             //TODO variable input location
             String xmlInput = stream.ReadToEnd();
             //String xmlInput = new System.IO.StreamReader(@"D:\Games\BlockadeRunner0.54.0\Blockade Runner 0.54.0\Mods\default\Solids.xml").ReadToEnd();
-
-            using (XmlReader reader = XmlReader.Create(new StringReader(xmlInput)))
+            try
             {
-                reader.ReadToFollowing("Solids");//Skips to first element
-                while (reader.Read())//Moves past it
+                using (XmlReader reader = XmlReader.Create(new StringReader(xmlInput)))
                 {
-                    reader.MoveToContent();//Moves to next element
-                    if (reader.NodeType != XmlNodeType.EndElement)
+                    reader.ReadToFollowing("Solids");//Skips to first element
+                    while (reader.Read())//Moves past it
                     {
-                        Block block = solids.addBlock(reader.Name, solidParams);//Take element Name and magic params
-                        foreach (String parm in solidParams)
+                        reader.MoveToContent();//Moves to next element
+                        if (reader.NodeType != XmlNodeType.EndElement)
                         {
-                            reader.MoveToAttribute(parm);
-                            block.setParam(parm, reader.Value);
+                            Block block = solids.addBlock(reader.Name, solidParams);//Take element Name and magic params
+                            foreach (String parm in solidParams)
+                            {
+                                reader.MoveToAttribute(parm);
+                                block.setParam(parm, reader.Value);
+                            }
                         }
                     }
+
+
                 }
-
-
+            }
+            catch (Exception)
+            {
+                throw new System.FormatException("Error in XML file, are you sure it's formatted right?");
             }
             return solids;
         }
