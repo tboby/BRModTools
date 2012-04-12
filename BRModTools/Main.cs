@@ -7,9 +7,13 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Tao.DevIl;
+using System.Drawing.Imaging;
 
 namespace BRModTools
 {
@@ -20,9 +24,11 @@ namespace BRModTools
         string[] CATEGORY_TYPES = { "S_Bulkheads", "S_Plating", "S_Windows", "S_Transit", "S_Doors", "S_Natural", "H_Interiors", "H_Lights", "H_Terminals", "H_Furniture", "H_LifeSupport", "H_Hydroponics", "E_Maneuvering", "E_Mains", "E_Interstellar", "E_Docking", "D_Armor", "D_Shields", "D_Sensors", "D_Emitters", "D_Security", "W_Mounts", "W_Weapons", "W_Equipment", "W_Ammunition", "U_Power", "U_Cables", "U_Radiators", "U_Industrial", "None" };
         ModList modList;
         DataTable data;
+        DataTable dataTex;
         Boolean first = true;
         public Main()
         {
+            
             InitializeComponent();
         }
         private void refreshSelect()
@@ -53,22 +59,25 @@ namespace BRModTools
             FolderBrowserDialog folderBrowserDialog1 = new FolderBrowserDialog();
             if (brExe.Exists) { folderBrowserDialog1.SelectedPath=dr.FullName+@"\mods"; }
             folderBrowserDialog1.ShowDialog();
-            try
-            {
+            //try
+           // {
                 if (folderBrowserDialog1.SelectedPath != "")
                 {
                     modFolderSelect(folderBrowserDialog1.SelectedPath);
                 }
                 button1.Enabled = true;
                 button2.Enabled = true;
+                button3.Enabled = true;
+                button4.Enabled = true;
                 create.Enabled = true;
                 remove.Enabled = true;
                 updateTable();
              
-            }
-            catch (Exception)
-            {
-            }
+            //}
+           // catch (Exception)
+           // {
+                
+           // }
 
         }
 
@@ -77,6 +86,35 @@ namespace BRModTools
             modList = new ModList(location);
             modList.init(); //init first so it can fail
             selectModBox.DataSource = modList.getModnames();
+            ArrayList textures = modList.getTextures();
+            //tableLayoutPanel1.RowCount = textures.Count;
+            foreach (Texture texture in textures)
+            {
+                PictureBox box = new PictureBox();
+                box.Image = texture.Image;
+                box.SizeMode = PictureBoxSizeMode.AutoSize;
+                box.Size = new Size(256, 256);
+                TextBox text = new TextBox();
+                text.Text=texture.Name;
+                //Make textbox a selectable label
+                text.ReadOnly = true;
+                text.BackColor = System.Drawing.SystemColors.Control;
+                text.BorderStyle = System.Windows.Forms.BorderStyle.None;
+               
+
+                //tableLayoutPanel1.Controls.Add(box);
+                //tableLayoutPanel1.Controls.Add(text);
+
+                //FlowLayoutPanel flow = new FlowLayoutPanel();
+                //flow.FlowDirection = FlowDirection.TopDown;
+                //flow.AutoSizeMode
+                //flow.Controls.Add(box);
+                //flow.Controls.Add(text);
+                //tableLayoutPanel1.Controls.Add(flow);
+
+                
+            }
+            dataGridView2.DataSource = modList.getTextureTable();
         }
 
         private void selectModBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -110,7 +148,9 @@ namespace BRModTools
         {
             String selected = (String)selectModBox.SelectedValue;
             data = modList.getTable(selected);
+            dataTex = modList.getTextureTable();
             dataGridView1.DataSource = data;
+            dataGridView2.DataSource = dataTex;
             if (first)
             {
                 dataGridView1.Columns.Remove("Class");
@@ -127,6 +167,12 @@ namespace BRModTools
                 dataGridView1.Columns.Insert(8, comboboxColumn3);
                 dataGridView1.Columns[0].Frozen = true;
                 first = false;
+                dataGridView2.Columns.Remove("Texture");
+                DataGridViewImageColumn imageColumn1 = new DataGridViewImageColumn();
+                imageColumn1.DataPropertyName = "Texture";
+                imageColumn1.HeaderText = "Texture";
+                //imageColumn1.
+                dataGridView2.Columns.Add(imageColumn1);
             }
         }
 
@@ -209,6 +255,11 @@ namespace BRModTools
         {
             dataGridView1.Rows.Remove(dataGridView1.CurrentRow);
         }
+
+        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 
 
@@ -217,6 +268,7 @@ namespace BRModTools
     {
         ModComparator myComparer = new ModComparator();
         ArrayList mods = new ArrayList();
+        Textures textures;
         public ModList(String location)
         {
             DirectoryInfo directory = new DirectoryInfo(location);
@@ -225,6 +277,7 @@ namespace BRModTools
             {
                 mods.Add(new Mod(mod.Name,mod.Parent.FullName));
             }
+            textures = new Textures(directory.Parent.FullName+@"\Content\textures");//Right place?
         }
         public void init()
         {
@@ -239,6 +292,16 @@ namespace BRModTools
             {
                 throw new FormatException("ModList threw a format exception");
             }
+            
+        }
+        public DataTable getTextureTable()
+        {
+            return textures.getTable();
+        }
+
+        public ArrayList getTextures()
+        {
+            return textures.getImages();
         }
 
         public void Save(String name)
@@ -379,6 +442,102 @@ namespace BRModTools
         {
             File.Delete(location + @"\" + Name + @"\solids.xml");
             Directory.Delete(location + "\\" + Name);
+        }
+    }
+    /// <summary>
+    /// Reference Article http://www.codeproject.com/KB/tips/SerializedObjectCloner.aspx
+    /// 
+    /// Provides a method for performing a deep copy of an object.
+    /// Binary Serialization is used to perform the copy.
+    /// </summary>
+
+    public static class ObjectCopier
+    {
+        /// <summary>
+        /// Perform a deep Copy of the object.
+        /// </summary>
+        /// <typeparam name="T">The type of object being copied.</typeparam>
+        /// <param name="source">The object instance to copy.</param>
+        /// <returns>The copied object.</returns>
+        public static T Clone<T>(T source)
+        {
+            if (!typeof(T).IsSerializable)
+            {
+                throw new ArgumentException("The type must be serializable.", "source");
+            }
+
+            // Don't serialize a null object, simply return the default for that object
+            if (Object.ReferenceEquals(source, null))
+            {
+                return default(T);
+            }
+
+            IFormatter formatter = new BinaryFormatter();
+            Stream stream = new MemoryStream();
+            using (stream)
+            {
+                formatter.Serialize(stream, source);
+                stream.Seek(0, SeekOrigin.Begin);
+                return (T)formatter.Deserialize(stream);
+            }
+        }
+    }    
+
+    public class Textures
+    {
+        ArrayList images;
+        DataTable dataTable;
+        public Textures(String path)
+        {
+            dataTable = new DataTable();
+            dataTable.Columns.Add("Texture Name");
+            dataTable.Columns.Add("File Name");
+            dataTable.Columns.Add("Texture", typeof(Image));
+
+            DirectoryInfo dir = new DirectoryInfo(path);
+            FileInfo[] files = dir.GetFiles("*diffuse.dds");
+            images = new ArrayList(); ;
+            foreach (FileInfo file in files)
+            {
+                File.ReadAllBytes(file.FullName);
+                Image bitmap = ImageTools.DDSDataToBMP(File.ReadAllBytes(file.FullName));
+                String actualName = Path.GetFileNameWithoutExtension(file.Name);
+                actualName=actualName.Replace("-diffuse", "");
+                Texture texture = new Texture(bitmap, file.Name);
+                images.Add(texture);
+                // Texture2D.FromStream(gds.GraphicsDevice, 
+                //images.Add(DevIL.DevIL.LoadBitmap(file.FullName));
+                dataTable.Rows.Add(actualName,file.Name, bitmap);
+            }
+           
+        }
+        public DataTable getTable()
+        {
+            return dataTable;
+        }
+
+        public ArrayList getImages()
+        {
+            return images;
+        }
+        //http://forums.create.msdn.com/forums/p/12527/66117.aspx
+        /// <summary>
+        /// Converts an in-memory image in DDS format to a System.Drawing.Bitmap
+        /// object for easy display in Windows forms.
+        /// </summary>
+        /// <param name="DDSData">Byte array containing DDS image data</param>
+        /// <returns>A Bitmap object that can be displayed</returns>
+        
+    }
+    public class Texture
+    {
+        public Image Image { get; set; }
+        public String Name { get; set; }
+        public String FileName { get; set; }
+        public Texture(Image image, String name)
+        {
+            this.Image = image;
+            this.Name = name;
         }
     }
 }
