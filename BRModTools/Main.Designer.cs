@@ -37,12 +37,13 @@
             this.selectModBox = new System.Windows.Forms.ListBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.editMaterial = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.serviceController1 = new System.ServiceProcess.ServiceController();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
+            this.serviceController1 = new System.ServiceProcess.ServiceController();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -141,6 +142,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.editMaterial);
             this.tabPage1.Controls.Add(this.button4);
             this.tabPage1.Controls.Add(this.button3);
             this.tabPage1.Controls.Add(this.dataGridView1);
@@ -151,6 +153,16 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Materials";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // editMaterial
+            // 
+            this.editMaterial.Location = new System.Drawing.Point(470, 391);
+            this.editMaterial.Name = "editMaterial";
+            this.editMaterial.Size = new System.Drawing.Size(75, 23);
+            this.editMaterial.TabIndex = 3;
+            this.editMaterial.Text = "Edit Material";
+            this.editMaterial.UseVisualStyleBackColor = true;
+            this.editMaterial.Click += new System.EventHandler(this.editMaterial_Click);
             // 
             // button4
             // 
@@ -176,8 +188,8 @@
             // 
             // dataGridView1
             // 
-            this.dataGridView1.AllowDrop = true;
             this.dataGridView1.AllowUserToAddRows = false;
+            this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.AllowUserToOrderColumns = true;
             this.dataGridView1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -185,6 +197,7 @@
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.Size = new System.Drawing.Size(539, 379);
             this.dataGridView1.TabIndex = 0;
+            this.dataGridView1.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_DoubleClick);
             // 
             // tabPage3
             // 
@@ -198,6 +211,8 @@
             // 
             // dataGridView2
             // 
+            this.dataGridView2.AllowUserToAddRows = false;
+            this.dataGridView2.AllowUserToDeleteRows = false;
             this.dataGridView2.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells;
             this.dataGridView2.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
             this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -245,5 +260,6 @@
         private System.ServiceProcess.ServiceController serviceController1;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.DataGridView dataGridView2;
+        private System.Windows.Forms.Button editMaterial;
     }
 }

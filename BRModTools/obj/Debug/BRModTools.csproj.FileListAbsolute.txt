@@ -3,7 +3,8 @@ C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\bin\De
 C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\bin\Debug\BRModTools.application
 C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\bin\Debug\BRModTools.exe
 C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\bin\Debug\BRModTools.pdb
-C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\obj\Debug\BRModTools.csprojResolveAssemblyReference.cache
+C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\bin\Debug\Tao.DevIl.dll
+C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\obj\Debug\BRModTools.BlockInfo.resources
 C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\obj\Debug\BRModTools.Main.resources
 C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\obj\Debug\BRModTools.Properties.Resources.resources
 C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\obj\Debug\BRModTools.csproj.GenerateResource.Cache
@@ -11,4 +12,3 @@ C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\obj\De
 C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\obj\Debug\BRModTools.application
 C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\obj\Debug\BRModTools.exe
 C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\obj\Debug\BRModTools.pdb
-C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\bin\Debug\Tao.DevIl.dll

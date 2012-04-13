@@ -19,9 +19,9 @@ namespace BRModTools
 {
     public partial class Main : Form
     {
-        string[] CLASS_TYPES = { "Helm", "Script", "Usable", "Standard", "Prefab", "PrefabFragment", "Power", "Propulsion", "Launcher", "Extra", "Paint", "Overlay", "Damage", "Void", "Null" };
-        string[] RENDER_TYPES = { "Standard", "Cylinder_Random", "CylinderYaw_Random", "CylinderYaw_Random2", "CylinderYaw_Random3", "Cylinder_Rarity", "Random", "Rarity", "Random3_Rarity", "Bulkhead", "Frame_Poxel", "Frame_Geometry", "Geometry", "Interior", "Plating", "None" };
-        string[] CATEGORY_TYPES = { "S_Bulkheads", "S_Plating", "S_Windows", "S_Transit", "S_Doors", "S_Natural", "H_Interiors", "H_Lights", "H_Terminals", "H_Furniture", "H_LifeSupport", "H_Hydroponics", "E_Maneuvering", "E_Mains", "E_Interstellar", "E_Docking", "D_Armor", "D_Shields", "D_Sensors", "D_Emitters", "D_Security", "W_Mounts", "W_Weapons", "W_Equipment", "W_Ammunition", "U_Power", "U_Cables", "U_Radiators", "U_Industrial", "None" };
+        public static string[] CLASS_TYPES = { "Helm", "Script", "Usable", "Standard", "Prefab", "PrefabFragment", "Power", "Propulsion", "Launcher", "Extra", "Paint", "Overlay", "Damage", "Void", "Null" };
+        public static string[] RENDER_TYPES = { "Standard", "Cylinder_Random", "CylinderYaw_Random", "CylinderYaw_Random2", "CylinderYaw_Random3", "Cylinder_Rarity", "Random", "Rarity", "Random3_Rarity", "Bulkhead", "Frame_Poxel", "Frame_Geometry", "Geometry", "Interior", "Plating", "None" };
+        public static string[] CATEGORY_TYPES = { "S_Bulkheads", "S_Plating", "S_Windows", "S_Transit", "S_Doors", "S_Natural", "H_Interiors", "H_Lights", "H_Terminals", "H_Furniture", "H_LifeSupport", "H_Hydroponics", "E_Maneuvering", "E_Mains", "E_Interstellar", "E_Docking", "D_Armor", "D_Shields", "D_Sensors", "D_Emitters", "D_Security", "W_Mounts", "W_Weapons", "W_Equipment", "W_Ammunition", "U_Power", "U_Cables", "U_Radiators", "U_Industrial", "None" };
         ModList modList;
         DataTable data;
         DataTable dataTex;
@@ -166,12 +166,18 @@ namespace BRModTools
                 dataGridView1.Columns.Insert(2, comboboxColumn2);
                 dataGridView1.Columns.Insert(8, comboboxColumn3);
                 dataGridView1.Columns[0].Frozen = true;
+                dataGridView1.ReadOnly = true; //Read only tag!
+
+                foreach (DataGridViewColumn col in dataGridView1.Columns)
+                {
+                    col.SortMode = DataGridViewColumnSortMode.Automatic;
+                }
+
                 first = false;
                 dataGridView2.Columns.Remove("Texture");
                 DataGridViewImageColumn imageColumn1 = new DataGridViewImageColumn();
                 imageColumn1.DataPropertyName = "Texture";
                 imageColumn1.HeaderText = "Texture";
-                //imageColumn1.
                 dataGridView2.Columns.Add(imageColumn1);
             }
         }
@@ -243,6 +249,7 @@ namespace BRModTools
 
         private void button3_Click(object sender, EventArgs e)
         {
+            data.DefaultView.Sort = String.Empty;
             DataRow row=data.Rows[0];
             Object[] items = row.ItemArray;
             items[0] = "CHANGEME";
@@ -260,6 +267,28 @@ namespace BRModTools
         {
 
         }
+
+        private void dataGridView1_DoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            materialDialog(sender, e);
+        }
+
+        private void editMaterial_Click(object sender, EventArgs e)
+        {
+            materialDialog(sender, e);
+        }
+
+        private void materialDialog(object sender, EventArgs e)
+        {
+            BindingManagerBase bm = dataGridView1.BindingContext[dataGridView1.DataSource, dataGridView1.DataMember];
+            DataRow dr = ((DataRowView)bm.Current).Row;
+                //DataRow dataRow = data.Rows[row];
+                //String name = (String)dataRow.ItemArray[0];
+                //TODO REPLACE THIS METHOD WITH REAL DATA BINDING
+                String name = (string)dr.ItemArray[0];
+                BlockInfo info = new BlockInfo(data, name,modList);
+                info.ShowDialog();
+        }
     }
 
 
@@ -269,8 +298,10 @@ namespace BRModTools
         ModComparator myComparer = new ModComparator();
         ArrayList mods = new ArrayList();
         Textures textures;
+        public String location { get; set; }
         public ModList(String location)
         {
+            this.location = location;
             DirectoryInfo directory = new DirectoryInfo(location);
             DirectoryInfo[] modData = directory.GetDirectories();
             foreach (DirectoryInfo mod in modData)
@@ -302,6 +333,11 @@ namespace BRModTools
         public ArrayList getTextures()
         {
             return textures.getImages();
+        }
+
+        public Image getTexture(String name)
+        {
+            return textures.getTexture(name);
         }
 
         public void Save(String name)
@@ -515,9 +551,21 @@ namespace BRModTools
         {
             return dataTable;
         }
+        public Image getTexture(String name)
+        {
+            foreach (Texture texture in images)
+            {
+                if (texture.Name.Equals(name))
+                {
+                    return texture.Image;
+                }
+            }
+            return new Bitmap(256, 256); ;//TODO Add error image;
+        }
 
         public ArrayList getImages()
         {
+
             return images;
         }
         //http://forums.create.msdn.com/forums/p/12527/66117.aspx
@@ -533,11 +581,28 @@ namespace BRModTools
     {
         public Image Image { get; set; }
         public String Name { get; set; }
-        public String FileName { get; set; }
+        public String RealName { get; set; }
         public Texture(Image image, String name)
         {
             this.Image = image;
             this.Name = name;
+        }
+        public Texture(String path, String name)
+        {
+            DirectoryInfo dir = new DirectoryInfo(path);
+            FileInfo[] files = dir.GetFiles("*diffuse.dds");
+            foreach (FileInfo file in files)
+            {
+                String actualName = Path.GetFileNameWithoutExtension(file.Name);
+                actualName = actualName.Replace("-diffuse", "");
+                if (actualName == name)
+                {
+                    File.ReadAllBytes(file.FullName);
+                    Image = ImageTools.DDSDataToBMP(File.ReadAllBytes(file.FullName));
+                    name = file.Name;
+                    RealName = actualName;
+                }
+            }
         }
     }
 }

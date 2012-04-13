@@ -52,7 +52,7 @@ namespace BRModTools
                     while (reader.Read())//Moves past it
                     {
                         reader.MoveToContent();//Moves to next element
-                        if (reader.NodeType != XmlNodeType.EndElement)
+                        if (reader.NodeType != XmlNodeType.EndElement && reader.Name!="")
                         {
                             Block block = solids.addBlock(reader.Name, solidParams);//Take element Name and magic params
                             foreach (String parm in solidParams)
@@ -102,7 +102,7 @@ namespace BRModTools
     /// </summary>
     public class Solids
     {
-        public DataTable BlockTable = new DataTable("Blocks");
+        public DataTable BlockTable = new DataTable("Materials");
         ArrayList blocks;
         //String[] solidParams = { "Mass", "HP", "Class", "Render", "Category", "Tags", "DescShort", "DescLong", "Flags", "Geometry", "Texture" };
         String[] solidParams = { "Category", "Class", "DescLong", "DescShort", "Flags", "Geometry", "HP", "Mass", "Render", "Tags", "Texture" };
