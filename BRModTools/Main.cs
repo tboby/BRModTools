@@ -288,6 +288,7 @@ namespace BRModTools
                 String name = (string)dr.ItemArray[0];
                 BlockInfo info = new BlockInfo(data, name,modList);
                 info.ShowDialog();
+                dr.EndEdit();
         }
     }
 
@@ -589,7 +590,16 @@ namespace BRModTools
         }
         public Texture(String path, String name)
         {
-            DirectoryInfo dir = new DirectoryInfo(path);
+            String textureFile = path+"\\"+name+"-diffuse.dds";
+            try
+            {
+                Image = ImageTools.DDSDataToBMP(File.ReadAllBytes(textureFile));
+            }
+            catch (Exception)
+            {
+                Image = null;
+            }
+            /*DirectoryInfo dir = new DirectoryInfo(path);
             FileInfo[] files = dir.GetFiles("*diffuse.dds");
             foreach (FileInfo file in files)
             {
@@ -602,7 +612,7 @@ namespace BRModTools
                     name = file.Name;
                     RealName = actualName;
                 }
-            }
+            }*/
         }
     }
 }

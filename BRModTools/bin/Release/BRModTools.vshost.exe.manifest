@@ -42,14 +42,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="BRModTools.exe" size="35840">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="BRModTools.exe" size="36352">
       <assemblyIdentity name="BRModTools" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>jUc5KkmYCvvTpZv01HZFuC4xUTQUL/KLSH0xOFhMTTM=</dsig:DigestValue>
+        <dsig:DigestValue>7W4q7YxF6W9zKF7GxouMENG+4U93FUU0p8NvN51mE+k=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
