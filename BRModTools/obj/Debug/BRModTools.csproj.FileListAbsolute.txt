@@ -12,3 +12,8 @@ C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\obj\De
 C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\obj\Debug\BRModTools.application
 C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\obj\Debug\BRModTools.exe
 C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\obj\Debug\BRModTools.pdb
+C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\obj\Debug\BRModTools.csprojResolveAssemblyReference.cache
+C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\bin\Debug\OpenTK.dll
+C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\bin\Debug\OpenTK.GLControl.dll
+C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\bin\Debug\Tao.FreeGlut.dll
+C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\bin\Debug\Tao.FreeGlut.xml

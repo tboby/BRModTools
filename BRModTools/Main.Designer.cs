@@ -156,6 +156,7 @@
             // 
             // editMaterial
             // 
+            this.editMaterial.Enabled = false;
             this.editMaterial.Location = new System.Drawing.Point(470, 391);
             this.editMaterial.Name = "editMaterial";
             this.editMaterial.Size = new System.Drawing.Size(75, 23);

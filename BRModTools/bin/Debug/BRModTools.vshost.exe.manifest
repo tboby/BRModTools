@@ -42,14 +42,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="BRModTools.exe" size="37376">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="BRModTools.exe" size="41472">
       <assemblyIdentity name="BRModTools" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>LEaAy/MT3dST4aBRskidUNwiAMt63lBGupl2HD+cbwI=</dsig:DigestValue>
+        <dsig:DigestValue>IQUkFPAOafRPQ5Q6Ne6VBLx9Llij5NHIYLELVHJl4fQ=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -66,6 +66,30 @@
     </dependentAssembly>
   </dependency>
   <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OpenTK.dll" size="2719744">
+      <assemblyIdentity name="OpenTK" version="1.0.0.0" publicKeyToken="BAD199FE84EB3DF4" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>kx44tHuCTDFqVbWlTVVlDJeMqQ3eHa6gIpnt3ZTnGcA=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OpenTK.GLControl.dll" size="24576">
+      <assemblyIdentity name="OpenTK.GLControl" version="1.0.0.0" publicKeyToken="BAD199FE84EB3DF4" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>hmsWJJ4uMPQUx4gpDM7mht9NEEwO2x0ho0XwTn0nTZs=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
     <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Tao.DevIl.dll" size="31232">
       <assemblyIdentity name="Tao.DevIl" version="0.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
@@ -74,6 +98,18 @@
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
         <dsig:DigestValue>QjYTjhIJ0NVXULGbfwBwbdqKQe4FOdvKKU1pYT42wl4=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Tao.FreeGlut.dll" size="40960">
+      <assemblyIdentity name="Tao.FreeGlut" version="2.4.0.2" publicKeyToken="6E602A6AD6C0D06D" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>fvGhhC7wBLEgS85w/FA20QQIoisEp8BAKvnPyQ53Ats=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -95,6 +131,24 @@
       <dsig:DigestValue>nJ+7KSybE2dXZYPWNHVLcnhLjYJ0g1QThRUBMgMSYOs=</dsig:DigestValue>
     </hash>
   </file>
+  <file name="freeglut.dll" size="206848">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>a9qHP1M1L4+SVH2VYjHmFP8AU53fYEFxcOJGvupcY08=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="OpenTK.dll" size="2719744">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>kx44tHuCTDFqVbWlTVVlDJeMqQ3eHa6gIpnt3ZTnGcA=</dsig:DigestValue>
+    </hash>
+  </file>
   <file name="Tao.DevIl.dll" size="31232">
     <hash>
       <dsig:Transforms>
@@ -102,6 +156,24 @@
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
       <dsig:DigestValue>QjYTjhIJ0NVXULGbfwBwbdqKQe4FOdvKKU1pYT42wl4=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Tao.FreeGlut.dll" size="40960">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>fvGhhC7wBLEgS85w/FA20QQIoisEp8BAKvnPyQ53Ats=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Tao.FreeGlut.xml" size="388749" writeableType="applicationData">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>UqO5kdbFKLO5ERk8JSXzMKlwht5qIlwr3aJjhLzu29w=</dsig:DigestValue>
     </hash>
   </file>
 </asmv1:assembly>

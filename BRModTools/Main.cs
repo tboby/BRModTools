@@ -69,6 +69,7 @@ namespace BRModTools
                 button2.Enabled = true;
                 button3.Enabled = true;
                 button4.Enabled = true;
+                editMaterial.Enabled = true;
                 create.Enabled = true;
                 remove.Enabled = true;
                 updateTable();

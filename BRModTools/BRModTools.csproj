@@ -65,6 +65,13 @@
       <HintPath>bin\Debug\DevIL.NET.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="OpenTK, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\OpenTK\1.0\Binaries\OpenTK\Release\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK.GLControl">
+      <HintPath>.\OpenTK.GLControl.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.ServiceProcess" />
@@ -80,19 +87,20 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\Tao.DevIl.dll</HintPath>
     </Reference>
+    <Reference Include="Tao.FreeGlut, Version=2.4.0.2, Culture=neutral, PublicKeyToken=6e602a6ad6c0d06d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\Tao.FreeGlut.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BlockGraphics.bak.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="BlockInfo.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="BlockInfo.Designer.cs">
       <DependentUpon>BlockInfo.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Form1.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Image.cs" />
     <Compile Include="Main.cs">
@@ -119,6 +127,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <None Include="BRModTools_TemporaryKey.pfx" />
+    <None Include="freeglut.lib" />
     <None Include="Properties\DataSources\Block.datasource" />
     <None Include="Properties\DataSources\BlockProperty.datasource" />
     <None Include="Properties\DataSources\BRModTools.Properties.Resources.datasource" />
@@ -170,8 +179,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="DevIL.dll" />
+    <Content Include="freeglut.dll" />
+    <Content Include="OpenTK.dll" />
     <Content Include="Tao.DevIl.dll" />
+    <Content Include="Tao.FreeGlut.dll" />
+    <Content Include="Tao.FreeGlut.xml" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -7,14 +7,14 @@
     <framework targetVersion="4.5" profile="Full" supportedRuntime="4.0.30319" />
   </compatibleFrameworks>
   <dependency>
-    <dependentAssembly dependencyType="install" codebase="BRModTools.exe.manifest" size="5504">
+    <dependentAssembly dependencyType="install" codebase="BRModTools.exe.manifest" size="9136">
       <assemblyIdentity name="BRModTools.exe" version="1.0.0.2" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>qi8P7ClGO95j1O+B02TQ2jAXXyx6soPf4MxlH4WudWI=</dsig:DigestValue>
+        <dsig:DigestValue>BcH6t+Y6STKRRC1AX0PliR+7OukP2wcD6BObqasA8b8=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
