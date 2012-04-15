@@ -59,16 +59,15 @@
   <PropertyGroup>
     <SignManifests>true</SignManifests>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>BRModTools.Program</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="DevIL.NET, Version=0.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\Debug\DevIL.NET.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="OpenTK, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\OpenTK\1.0\Binaries\OpenTK\Release\OpenTK.dll</HintPath>
-    </Reference>
     <Reference Include="OpenTK.GLControl">
       <HintPath>.\OpenTK.GLControl.dll</HintPath>
     </Reference>
@@ -87,15 +86,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\Tao.DevIl.dll</HintPath>
     </Reference>
-    <Reference Include="Tao.FreeGlut, Version=2.4.0.2, Culture=neutral, PublicKeyToken=6e602a6ad6c0d06d, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>.\Tao.FreeGlut.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BlockGraphics.bak.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="BlockInfo.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -127,7 +119,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <None Include="BRModTools_TemporaryKey.pfx" />
-    <None Include="freeglut.lib" />
     <None Include="Properties\DataSources\Block.datasource" />
     <None Include="Properties\DataSources\BlockProperty.datasource" />
     <None Include="Properties\DataSources\BRModTools.Properties.Resources.datasource" />
@@ -179,11 +170,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="DevIL.dll" />
-    <Content Include="freeglut.dll" />
     <Content Include="OpenTK.dll" />
     <Content Include="Tao.DevIl.dll" />
-    <Content Include="Tao.FreeGlut.dll" />
-    <Content Include="Tao.FreeGlut.xml" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

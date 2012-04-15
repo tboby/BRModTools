@@ -58,13 +58,11 @@ namespace BRModTools
             FileInfo brExe = new FileInfo(dr.FullName+@"\blockaderunner.exe");
             FolderBrowserDialog folderBrowserDialog1 = new FolderBrowserDialog();
             if (brExe.Exists) { folderBrowserDialog1.SelectedPath=dr.FullName+@"\mods"; }
-            folderBrowserDialog1.ShowDialog();
-            //try
-           // {
-                if (folderBrowserDialog1.SelectedPath != "")
-                {
-                    modFolderSelect(folderBrowserDialog1.SelectedPath);
-                }
+            DialogResult result = folderBrowserDialog1.ShowDialog();
+            if (folderBrowserDialog1.SelectedPath != "" && result == DialogResult.OK)
+            {
+                modFolderSelect(folderBrowserDialog1.SelectedPath);
+
                 button1.Enabled = true;
                 button2.Enabled = true;
                 button3.Enabled = true;
@@ -73,13 +71,7 @@ namespace BRModTools
                 create.Enabled = true;
                 remove.Enabled = true;
                 updateTable();
-             
-            //}
-           // catch (Exception)
-           // {
-                
-           // }
-
+            }
         }
 
         private void modFolderSelect(String location)
@@ -154,7 +146,7 @@ namespace BRModTools
             dataGridView2.DataSource = dataTex;
             if (first)
             {
-                dataGridView1.Columns.Remove("Class");
+                /*dataGridView1.Columns.Remove("Class");
                 dataGridView1.Columns.Remove("Category");
                 dataGridView1.Columns.Remove("Render");
                 DataGridViewComboBoxColumn comboboxColumn1;
@@ -165,7 +157,7 @@ namespace BRModTools
                 comboboxColumn3 = CreateComboBoxColumn(3);
                 dataGridView1.Columns.Insert(1, comboboxColumn1);
                 dataGridView1.Columns.Insert(2, comboboxColumn2);
-                dataGridView1.Columns.Insert(8, comboboxColumn3);
+                dataGridView1.Columns.Insert(8, comboboxColumn3);*/
                 dataGridView1.Columns[0].Frozen = true;
                 dataGridView1.ReadOnly = true; //Read only tag!
 
@@ -306,9 +298,10 @@ namespace BRModTools
             this.location = location;
             DirectoryInfo directory = new DirectoryInfo(location);
             DirectoryInfo[] modData = directory.GetDirectories();
+            mods.Add(new Mod("Vanilla",directory.Parent.FullName+@"\Content\Data"));
             foreach (DirectoryInfo mod in modData)
             {
-                mods.Add(new Mod(mod.Name,mod.Parent.FullName));
+                mods.Add(new Mod(mod.Name,mod.FullName));
             }
             textures = new Textures(directory.Parent.FullName+@"\Content\textures");//Right place?
         }
@@ -366,6 +359,7 @@ namespace BRModTools
                 sourceString += "-c";
             }
             clone.Rename(sourceString);
+            clone.location = location + "\\" + sourceString;
             mods.Add(clone);
             clone.Save();
         }
@@ -374,13 +368,17 @@ namespace BRModTools
             Mod mod = getMod(name);
             while (mods.BinarySearch(new Mod(newName, null), myComparer) > -1)
             {
-                name += "-d";
+                newName += "-d";
             }
             mod.Name = newName;
+            Directory.Move(location+"\\"+name,location+"\\"+newName);
+            mod.location = location + "\\" + name;
         }
         public Mod getMod(String name)
         {
+            mods.Sort(myComparer);
             Mod search = new Mod(name,null);
+            
             return (Mod)mods[mods.BinarySearch(search, myComparer)];
         }
         public void Remove(String name)
@@ -411,10 +409,10 @@ namespace BRModTools
     [Serializable()]
     public class Mod
     {
-        String[] solidParams = { "Category", "Class", "DescLong", "DescShort", "Flags", "Geometry", "HP", "Mass", "Render", "Tags", "Texture" };
+        String[] solidParams = { "Category", "Type", "DescLong", "DescShort", "Flags", "HP", "Mass", "RenderType", "Tags", "TexturePath", "ModelPath" };
 
         public String Name { get; set; }
-        private String location;
+        public String location { get; set; }
         private DataTable Blocks;
         public Mod(String name, String location)
         {
@@ -423,12 +421,12 @@ namespace BRModTools
         }
         public void loadBlocks()
         {
-            StreamReader stream = new StreamReader(location + @"\" + Name+@"\solids.xml");
+            String path = location+ "\\solids.xml";
+            StreamReader stream = new StreamReader(location +@"\solids.xml");
             try
             {
-                Solids solids = ModParser.inputSolids(stream);
-                solids.TableCreater();
-                Blocks = solids.BlockTable;
+                Blocks = ModParser.solidsTable(path,null);
+                
             }
             catch (FormatException)
             {
@@ -446,31 +444,11 @@ namespace BRModTools
 
             //TODO copy files
         }
-        public Solids exportTable()
-        {
-            Solids output = new Solids();
-            foreach (DataRow row in Blocks.Rows)
-            {
-                if (!row[0].ToString().Equals(""))
-                {
-                    Block block = output.addBlock((String)row["Name"], solidParams);
-
-                    foreach (DataColumn column in Blocks.Columns)
-                    {
-                        block.setParam(column.Caption, (String)row[column.Caption]);
-                    }
-                }
-
-
-            }
-            return output;
-        }
         public void Save()
         {
-            Solids export = exportTable();
-            String xml = ModWriter.outputSolids(export);
-            System.IO.Directory.CreateDirectory(location + "\\" + Name);
-            FileStream fs = File.Create(location + @"\" + Name + @"\solids.xml");
+            String xml = ModWriter.outputTable(Blocks);
+            System.IO.Directory.CreateDirectory(location);
+            FileStream fs = File.Create(location + @"\solids.xml");
             StreamWriter file = new StreamWriter(fs);
             //StreamWriter file = new StreamWriter(location + @"\" + Name + @"\solids.xml");
             file.WriteLine(xml);
@@ -478,8 +456,8 @@ namespace BRModTools
          }
         public void Delete()
         {
-            File.Delete(location + @"\" + Name + @"\solids.xml");
-            Directory.Delete(location + "\\" + Name);
+            File.Delete(location + @"\solids.xml");
+            Directory.Delete(location);
         }
     }
     /// <summary>
@@ -519,7 +497,7 @@ namespace BRModTools
                 return (T)formatter.Deserialize(stream);
             }
         }
-    }    
+    }
 
     public class Textures
     {
@@ -533,7 +511,8 @@ namespace BRModTools
             dataTable.Columns.Add("Texture", typeof(Image));
 
             DirectoryInfo dir = new DirectoryInfo(path);
-            FileInfo[] files = dir.GetFiles("*diffuse.dds");
+            FileInfo[] files;
+            try { files = dir.GetFiles("*diffuse.dds"); }catch(FileNotFoundException e){throw e;}
             images = new ArrayList(); ;
             foreach (FileInfo file in files)
             {

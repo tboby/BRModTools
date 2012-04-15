@@ -8,8 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
 
 namespace BRModTools
 {
@@ -37,17 +35,17 @@ namespace BRModTools
             dv = data.DefaultView;
             dv.RowFilter = "Name ='"+name+"'";
             MaterialBox.DataBindings.Add("Text",dv,"Name",true,DataSourceUpdateMode.OnPropertyChanged);
-            TextureBox.DataBindings.Add("Text", dv, "Texture", true, DataSourceUpdateMode.OnPropertyChanged);
-            ClassBox.DataBindings.Add("Text", dv, "Class", true, DataSourceUpdateMode.OnPropertyChanged);
+            TextureBox.DataBindings.Add("Text", dv, "TexturePath", true, DataSourceUpdateMode.OnPropertyChanged);
+            ClassBox.DataBindings.Add("Text", dv, "Type", true, DataSourceUpdateMode.OnPropertyChanged);
             CategoryBox.DataBindings.Add("Text", dv, "Category", true, DataSourceUpdateMode.OnPropertyChanged);
-            RenderBox.DataBindings.Add("Text", dv, "Render", true, DataSourceUpdateMode.OnPropertyChanged);
+            RenderBox.DataBindings.Add("Text", dv, "RenderType", true, DataSourceUpdateMode.OnPropertyChanged);
             MassBox.DataBindings.Add("Text", dv, "Mass", true, DataSourceUpdateMode.OnPropertyChanged);
             HpBox.DataBindings.Add("Text", dv, "HP", true, DataSourceUpdateMode.OnPropertyChanged);
             DescLongBox.DataBindings.Add("Text", dv, "DescLong", true, DataSourceUpdateMode.OnPropertyChanged);
             DescShortBox.DataBindings.Add("Text", dv, "DescShort", true, DataSourceUpdateMode.OnPropertyChanged);
             TagsBox.DataBindings.Add("Text", dv, "Tags", true, DataSourceUpdateMode.OnPropertyChanged);
             FlagsBox.DataBindings.Add("Text", dv, "Flags", true, DataSourceUpdateMode.OnPropertyChanged);
-            GeometryBox.DataBindings.Add("Text", dv, "Geometry", true, DataSourceUpdateMode.OnPropertyChanged);
+            GeometryBox.DataBindings.Add("Text", dv, "ModelPath", true, DataSourceUpdateMode.OnPropertyChanged);
             
             
 

@@ -32,18 +32,17 @@ namespace BRModTools
     /// </summary>
     public static class ModParser
     {
-        /// <summary>
-        /// Takes the solids xml file and parses it
-        /// </summary>
-        /// <returns>The solids object containingall the content</returns>
-        public static Solids inputSolids(StreamReader stream)
+       
+        public static DataTable solidsTable(String solids, String modInformation)
         {
-            //TODO Magic parameters, need a standardised list from ZanMgt
-            String[] solidParams = { "Category", "Class", "DescLong", "DescShort", "Flags", "Geometry", "HP", "Mass", "Render", "Tags", "Texture" };
-            Solids solids = new Solids();
-            //TODO variable input location
-            String xmlInput = stream.ReadToEnd();
-            //String xmlInput = new System.IO.StreamReader(@"D:\Games\BlockadeRunner0.54.0\Blockade Runner 0.54.0\Mods\default\Solids.xml").ReadToEnd();
+            DataTable output = new DataTable("Materials");
+            String[] solidParams = { "Category", "Type", "DescLong", "DescShort", "Flags", "HP", "Mass", "RenderType", "Tags", "TexturePath", "ModelPath" };
+            String xmlInput = new System.IO.StreamReader(solids).ReadToEnd();
+            output.Columns.Add("Name");
+            foreach (String param in solidParams)
+            {
+                output.Columns.Add(param);
+            }
             try
             {
                 using (XmlReader reader = XmlReader.Create(new StringReader(xmlInput)))
@@ -54,12 +53,15 @@ namespace BRModTools
                         reader.MoveToContent();//Moves to next element
                         if (reader.NodeType != XmlNodeType.EndElement && reader.Name!="")
                         {
-                            Block block = solids.addBlock(reader.Name, solidParams);//Take element Name and magic params
+                           // output.Rows.Add(
+                            Block block = new Block(reader.Name,solidParams);
                             foreach (String parm in solidParams)
                             {
-                                reader.MoveToAttribute(parm);
                                 block.setParam(parm, reader.Value);
+                                reader.MoveToAttribute(parm);
+                                block.setParam(reader.Name, reader.Value);
                             }
+                            output.Rows.Add(block.getRow());
                         }
                     }
 
@@ -70,7 +72,7 @@ namespace BRModTools
             {
                 throw new System.FormatException("Error in XML file, are you sure it's formatted right?");
             }
-            return solids;
+            return output;
         }
     }
     /// <summary>
@@ -78,78 +80,32 @@ namespace BRModTools
     /// </summary>
     static class ModWriter
     {
-        /// <summary>
-        /// Takes a Solids object and returns the xml file representing it
-        /// </summary>
-        /// <param name="solids">A solids object</param>
-        /// <returns>The string, formatted to be written to file</returns>
-        public static String outputSolids(Solids solids)
+     
+        public static String outputTable(DataTable data)
         {
-            String output = "<?xml version=\"1.0\"?>\r\n<Solids>\r\n";
-            ArrayList blocks = solids.getBlocks();//TODO get rid of the need for getBlocks, use length()
-            foreach (Block block in blocks)
+            String[] attributes = new String[data.Columns.Count];
+            for(int i=0;i<attributes.Length;i++)
             {
-                output = output + block.getXml() + "\r\n";
-
+                attributes[i]=data.Columns[i].Caption;
             }
-            output = output + "</Solids>";
+            String output = "<?xml version=\"1.0\"?>\r\n<Solids>\r\n";
+            foreach(DataRow row in data.Rows)
+            {
+                output += "     <" + row["Name"] + " ";
+                foreach (String attribute in attributes)
+                {
+                    if (attribute != "Name")
+                    {
+                        output += attribute + "=\"" + row[attribute] + "\" ";
+                    }
+                }
+                output += "/>\r\n";
+            }
+            output += "</Solids>";
             return output;
         }
     }
-    /// <summary>
-    /// The solids.xml storage object
-    /// Holds a list of all block types along with any other data in the xml
-    /// </summary>
-    public class Solids
-    {
-        public DataTable BlockTable = new DataTable("Materials");
-        ArrayList blocks;
-        //String[] solidParams = { "Mass", "HP", "Class", "Render", "Category", "Tags", "DescShort", "DescLong", "Flags", "Geometry", "Texture" };
-        String[] solidParams = { "Category", "Class", "DescLong", "DescShort", "Flags", "Geometry", "HP", "Mass", "Render", "Tags", "Texture" };
-        public Solids()
-        {
-            blocks = new ArrayList();
-            
-        }
-        public void TableCreater()
-        {
-            BlockTable.Columns.Add("Name");
-            foreach (String param in solidParams)
-            {
-                BlockTable.Columns.Add(param);
-            }
-            ArrayList temp;
-            foreach (Block block in blocks)
-            {
-                temp =block.BlockProperties;
-                String name = block.Name; 
-                BlockTable.Rows.Add(name,((BlockProperty)temp[0]).Value, ((BlockProperty)temp[1]).Value, ((BlockProperty)temp[2]).Value, ((BlockProperty)temp[3]).Value, ((BlockProperty)temp[4]).Value, ((BlockProperty)temp[5]).Value, ((BlockProperty)temp[6]).Value, ((BlockProperty)temp[7]).Value, ((BlockProperty)temp[8]).Value, ((BlockProperty)temp[9]).Value, ((BlockProperty)temp[10]).Value);
-            }
-        }
-        /// <summary>
-        /// Add new blocks to the list of blocks in Solids.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public Block addBlock(String name,String[] parameters)
-        {
-            Block newBlock = new Block(name, parameters);
-            blocks.Add(newBlock);
-            return newBlock;
-        }
-        /// <summary>
-        /// Removes the block at this index in the arrayList (Not necessarily in display)
-        /// </summary>
-        /// <param name="index"></param>
-        public void removeBlock(int index)
-        {
-            blocks.RemoveAt(index);
-        }
-        public ArrayList getBlocks()
-        {
-            return blocks;
-        }
-    }
+
     /// <summary>
     /// Stores a single block and all its properties
     /// </summary>
@@ -158,9 +114,11 @@ namespace BRModTools
         public String Name { get; set; }
         public ArrayList BlockProperties;
         private IComparer myComparer = new PropertyComparator();
+        String[] parameters;
 
         public Block(String name, String[] parameters)
         {
+            this.parameters = parameters;
             BlockProperties = new ArrayList();
             this.Name = name;
             foreach (String parm in parameters)
@@ -180,6 +138,25 @@ namespace BRModTools
             
         }
 
+        public String getParam(String param)
+        {
+            BlockProperties.Sort(myComparer);
+            if (param.Equals("Name")) { return Name; }
+            else
+            {
+                try
+                {
+                    BlockProperty prop = (BlockProperty)BlockProperties[BlockProperties.BinarySearch(new BlockProperty(param), myComparer)];
+                    return prop.Value;
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    return "";
+                }
+                    
+            }
+        }
+
         public String getXml()
         {
             String output = "     <"+Name+" ";//4 spaces,<, name then space.
@@ -189,6 +166,17 @@ namespace BRModTools
             }
             output = output + "/>";
             return output;
+        }
+
+        public Object[] getRow()
+        {
+            Object[] returnArray = new Object[parameters.Length+1];
+            returnArray[0] = Name;
+            for(int i = 0; i<parameters.Length;i++)
+            {
+                returnArray[i+1] = getParam(parameters[i]);
+            }
+            return returnArray;
         }
 
 
@@ -203,6 +191,11 @@ namespace BRModTools
         public BlockProperty(String property)
         {
             this.Property=property;
+        }
+        public BlockProperty(String property, String value)
+        {
+            this.Property = property;
+            this.Value = value;
         }
 
 

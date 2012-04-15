@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.Load += new System.EventHandler(this.Form1_Load);
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
             this.MaterialBox = new System.Windows.Forms.TextBox();
@@ -59,11 +58,9 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.glControl1 = new OpenTK.GLControl();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
             this.SuspendLayout();
             // 
             // pictureBox1
@@ -286,7 +283,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(115, 69);
+            this.button1.Location = new System.Drawing.Point(115, 73);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(22, 23);
             this.button1.TabIndex = 26;
@@ -317,7 +314,6 @@
             // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.glControl1);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
@@ -325,18 +321,6 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Voxel";
             this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // glControl1
-            // 
-            this.glControl1.BackColor = System.Drawing.Color.Black;
-            this.glControl1.Location = new System.Drawing.Point(-4, 0);
-            this.glControl1.Name = "glControl1";
-            this.glControl1.Size = new System.Drawing.Size(256, 256);
-            this.glControl1.TabIndex = 0;
-            this.glControl1.VSync = false;
-            //this.glControl1.Load += new System.EventHandler(this.glControl1_Load);
-            //this.glControl1.Resize += new System.EventHandler(this.glControl1_Resize);
-            //this.glControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl1_Paint);
             // 
             // BlockInfo
             // 
@@ -377,7 +361,6 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
-            this.tabPage2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
