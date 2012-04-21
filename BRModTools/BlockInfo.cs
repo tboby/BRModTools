@@ -100,15 +100,21 @@ namespace BRModTools
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            String location = modList.modLocation;
-            DirectoryInfo directory = new DirectoryInfo(location);
-            String texturePath = directory.Parent.FullName + @"\Content\textures";
-            texture = new Texture(texturePath, TextureBox.Text).Image;
-            pictureBox1.Image = texture;
-            BlockRender render = new BlockRender((Bitmap)texture);
-            this.userControl11 = new UserControl1(render.getFaces(0));
-            this.elementHost1.Child = this.userControl11;
-            
+            if (ClassBox.Text != "Prefab")
+            {
+                String location = modList.modLocation;
+                DirectoryInfo directory = new DirectoryInfo(location);
+                String texturePath = directory.Parent.FullName + @"\Content\textures";
+                texture = new Texture(texturePath, TextureBox.Text).Image;
+                pictureBox1.Image = texture;
+                BlockRender render = new BlockRender((Bitmap)texture);
+                this.userControl11 = new UserControl1(render.getFaces(0));
+                this.elementHost1.Child = this.userControl11;
+            }
+            else
+            {
+                System.Windows.MessageBox.Show("You can't preview prefabs at the moment");
+            }
         }
     }
 

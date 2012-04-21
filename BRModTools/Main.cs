@@ -574,6 +574,7 @@ namespace BRModTools
             {
                 File.ReadAllBytes(file.FullName);
                 Image bitmap = ImageTools.DDSDataToBMP(File.ReadAllBytes(file.FullName));
+                //Image bitmap = DevIL.DevIL.LoadBitmap(file.FullName);
                 String actualName = Path.GetFileNameWithoutExtension(file.Name);
                 actualName=actualName.Replace("-diffuse", "");
                 Texture texture = new Texture(bitmap, file.Name);

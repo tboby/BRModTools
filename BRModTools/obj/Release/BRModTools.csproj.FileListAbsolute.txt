@@ -23,3 +23,4 @@ C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\obj\Re
 C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\obj\Release\BRModTools_MarkupCompile.lref
 C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\obj\Release\UserControl1.baml
 C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\obj\Release\BRModTools.g.resources
+C:\Users\Thomas\Documents\Visual Studio 11\Projects\BRModTools\BRModTools\bin\Release\DevIL.dll

@@ -32,7 +32,7 @@ namespace BRModTools
         public ImageSource test { get; set; }
         public BitmapSource Thumb { get; set; }
         public ImageSource topTexture { get; set; }
-        public ImageBrush bottomBrush = new ImageBrush(new BitmapImage(new Uri(@"C:\\Users\\Thomas\\Documents\\Visual Studio 11\\Projects\\WpfTest2\\WpfTest2\\bark.jpg")));
+        //public ImageBrush bottomBrush = new ImageBrush(new BitmapImage(new Uri(@"C:\\Users\\Thomas\\Documents\\Visual Studio 11\\Projects\\WpfTest2\\WpfTest2\\bark.jpg")));
         public UserControl1(BitmapSource[] faces)
         {
             InitializeComponent();
@@ -46,7 +46,6 @@ namespace BRModTools
         }
         private Bitmap BitmapImage2Bitmap(BitmapImage bitmapImage)
         {
-            // BitmapImage bitmapImage = new BitmapImage(new Uri("../Images/test.png", UriKind.Relative));
 
             using (MemoryStream outStream = new MemoryStream())
             {
