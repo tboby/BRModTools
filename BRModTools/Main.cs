@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Tao.DevIl;
 using System.Drawing.Imaging;
+using System.Security.AccessControl;
 
 namespace BRModTools
 {
@@ -26,6 +27,7 @@ namespace BRModTools
         DataTable data;
         DataTable dataTex;
         Boolean first = true;
+        String activeMod;
         public Main()
         {
             
@@ -34,6 +36,7 @@ namespace BRModTools
         private void refreshSelect()
         {
             selectModBox.DataSource = modList.getModnames();
+            activeMod = modList.getActiveMod();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -46,8 +49,19 @@ namespace BRModTools
         private void remove_Click(object sender, EventArgs e)
         {
             String selected = (String)selectModBox.SelectedValue;
-            modList.Remove(selected);
-            refreshSelect();
+            if (selected == activeMod)
+            {
+                MessageBox.Show("You can't delete the Active Mod!", "Invalid mod");
+            }
+            else if (selected == "Vanilla")
+            {
+                MessageBox.Show("You can't rename the Vanilla files!", "Invalid mod");
+            }
+            else
+            {
+                modList.Remove(selected);
+                refreshSelect();
+            }
         }
 
         private void selectMod_Click(object sender, EventArgs e)
@@ -70,16 +84,44 @@ namespace BRModTools
                 editMaterial.Enabled = true;
                 create.Enabled = true;
                 remove.Enabled = true;
+                setActiveMod.Enabled = true;
                 updateTable();
             }
         }
+
+        void DrawItemHandler(object sender, DrawItemEventArgs e)
+        {
+            e.DrawBackground();
+            e.DrawFocusRectangle();
+            List<String> modNames = modList.getModnames();
+            int index = 0;
+            int actual = 0;
+            foreach (String name in modNames)
+            {
+                if (activeMod == name)
+                {
+                    actual = index;
+                }
+                index++;
+            }
+            if (e.Index == actual)
+            {
+                e.Graphics.DrawString(selectModBox.Items[e.Index].ToString(), new Font("Arial", 9, FontStyle.Bold | FontStyle.Italic), Brushes.Black, e.Bounds);
+            }
+            else
+            {
+                e.Graphics.DrawString(selectModBox.Items[e.Index].ToString(), new Font("Arial", 10, FontStyle.Regular), Brushes.Black, e.Bounds);
+            }
+        }
+
 
         private void modFolderSelect(String location)
         {
             modList = new ModList(location);
             modList.init(); //init first so it can fail
+            selectModBox.DrawMode = DrawMode.OwnerDrawFixed;
             selectModBox.DataSource = modList.getModnames();
-            ArrayList textures = modList.getTextures();
+            ArrayList textures = modList.getTextures((string)selectModBox.SelectedItem);
             //tableLayoutPanel1.RowCount = textures.Count;
             foreach (Texture texture in textures)
             {
@@ -93,21 +135,9 @@ namespace BRModTools
                 text.ReadOnly = true;
                 text.BackColor = System.Drawing.SystemColors.Control;
                 text.BorderStyle = System.Windows.Forms.BorderStyle.None;
-               
-
-                //tableLayoutPanel1.Controls.Add(box);
-                //tableLayoutPanel1.Controls.Add(text);
-
-                //FlowLayoutPanel flow = new FlowLayoutPanel();
-                //flow.FlowDirection = FlowDirection.TopDown;
-                //flow.AutoSizeMode
-                //flow.Controls.Add(box);
-                //flow.Controls.Add(text);
-                //tableLayoutPanel1.Controls.Add(flow);
-
-                
             }
-            dataGridView2.DataSource = modList.getTextureTable();
+            dataGridView2.DataSource = modList.getTextureTable((string)selectModBox.SelectedItem);
+            refreshSelect();
         }
 
         private void selectModBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -117,47 +147,36 @@ namespace BRModTools
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            string input = Microsoft.VisualBasic.Interaction.InputBox("Rename Mod", "Enter the new mod name");
-            if (!input.Equals(""))
+            String selected = (String)selectModBox.SelectedValue;
+            if (selected == activeMod)
             {
-                String selected = (String)selectModBox.SelectedValue;
-                modList.rename(selected,input);
+                MessageBox.Show("You can't rename the Active Mod!", "Invalid mod");
+                
             }
-            refreshSelect();
+            else if(selected == "Vanilla")
+            {
+                MessageBox.Show("You can't rename the Vanilla files!", "Invalid mod");
+            }
+            else{
+                
+                string input = Microsoft.VisualBasic.Interaction.InputBox("Rename Mod", "Enter the new mod name");
+                if (!input.Equals(""))
+                {
+                    modList.rename(selected, input);
+                }
+                refreshSelect();
+            }
         }
 
-        private void dataGridView1_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
-        {
-            /*if (e.ColumnIndex == myColumn.Index)
-            {
-                object eFormattedValue = e.FormattedValue;
-                if (!myColumn.Items.Contains(eFormattedValue))
-                {
-                    myColumn.Items.Add(eFormattedValue);
-                }
-            }*/
-        }
         private void updateTable()
         {
             String selected = (String)selectModBox.SelectedValue;
             data = modList.getTable(selected);
-            dataTex = modList.getTextureTable();
+            dataTex = modList.getTextureTable(selected);
             dataGridView1.DataSource = data;
             dataGridView2.DataSource = dataTex;
             if (first)
             {
-                /*dataGridView1.Columns.Remove("Class");
-                dataGridView1.Columns.Remove("Category");
-                dataGridView1.Columns.Remove("Render");
-                DataGridViewComboBoxColumn comboboxColumn1;
-                DataGridViewComboBoxColumn comboboxColumn2;
-                DataGridViewComboBoxColumn comboboxColumn3;
-                comboboxColumn1 = CreateComboBoxColumn(1);
-                comboboxColumn2 = CreateComboBoxColumn(2);
-                comboboxColumn3 = CreateComboBoxColumn(3);
-                dataGridView1.Columns.Insert(1, comboboxColumn1);
-                dataGridView1.Columns.Insert(2, comboboxColumn2);
-                dataGridView1.Columns.Insert(8, comboboxColumn3);*/
                 dataGridView1.Columns[0].Frozen = true;
                 dataGridView1.ReadOnly = true; //Read only tag!
 
@@ -175,64 +194,8 @@ namespace BRModTools
             }
         }
 
-        private DataGridViewComboBoxColumn CreateComboBoxColumn(int columnNum) //1 = Cat, 2 Class, 3 Render
-        {
-            DataGridViewComboBoxColumn column =
-                new DataGridViewComboBoxColumn();
-            {
-                switch (columnNum)
-                {
-                    case 1:
-                        column.DataPropertyName = "Category";
-                        column.HeaderText = "Category";
-                        column.MaxDropDownItems = 3;
-                        column.Items.AddRange(CATEGORY_TYPES);
-                        column.ValueMember = "Category";
-                        column.DropDownWidth = DropDownWidth(CATEGORY_TYPES);
-
-                        break;
-                    case 2:
-                        column.DataPropertyName = "Class";
-                        column.HeaderText = "Class";
-                        column.MaxDropDownItems = 15;
-                        column.Items.AddRange(CLASS_TYPES);
-                        column.ValueMember = "Class";
-                        column.DropDownWidth = DropDownWidth(CLASS_TYPES);
-
-                        break;
-                    case 3:
-                        column.DataPropertyName = "Render";
-                        column.HeaderText = "Render";
-                        column.MaxDropDownItems = 29;
-                        column.Items.AddRange(RENDER_TYPES);
-                        column.ValueMember = "Render";
-                        column.DropDownWidth = DropDownWidth(RENDER_TYPES);
-
-                        break;
-                }
-            }
-            column.DisplayStyle = DataGridViewComboBoxDisplayStyle.Nothing;
-            return column;
-        }
-        //http://stackoverflow.com/questions/4842160/auto-width-of-comboboxs-content
-        int DropDownWidth(String[] items)
-        {
-            int maxWidth = 0;
-            int temp = 0;
-            Label label1 = new Label();
-
-            foreach (var obj in items)
-            {
-                label1.Text = obj.ToString();
-                temp = label1.PreferredWidth;
-                if (temp > maxWidth)
-                {
-                    maxWidth = temp;
-                }
-            }
-            label1.Dispose();
-            return maxWidth;   
-        }
+        
+        
 
         private void button2_Click(object sender, EventArgs e)
         {
@@ -242,18 +205,37 @@ namespace BRModTools
 
         private void button3_Click(object sender, EventArgs e)
         {
-            data.DefaultView.Sort = String.Empty;
-            DataRow row=data.Rows[0];
-            Object[] items = row.ItemArray;
-            items[0] = "CHANGEME";
-            data.Rows.Add(items);
-            dataGridView1.FirstDisplayedScrollingRowIndex = dataGridView1.Rows.Count - 1;
-            dataGridView1.Rows[(dataGridView1.Rows.Count - 1)].Selected = true;
+            if (((string)selectModBox.SelectedItem) != "Vanilla")
+            {
+                data.DefaultView.Sort = String.Empty;
+                DataRow row = data.Rows[0];
+                Object[] items = row.ItemArray;
+                items[0] = "CHANGEME";
+                data.Rows.Add(items);
+                dataGridView1.FirstDisplayedScrollingRowIndex = dataGridView1.Rows.Count - 1;
+                dataGridView1.Rows[(dataGridView1.Rows.Count - 1)].Selected = true;
+            }
+            else
+            {
+                vanillaReadOnlyError();
+            }
+        }
+
+        void vanillaReadOnlyError()
+        {
+            MessageBox.Show("You can't modify the Vanilla files, make a clone!", "Invalid Mod");
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            dataGridView1.Rows.Remove(dataGridView1.CurrentRow);
+            if (((string)selectModBox.SelectedItem) != "Vanilla")
+            {
+                dataGridView1.Rows.Remove(dataGridView1.CurrentRow);
+            }
+            else
+            {
+                vanillaReadOnlyError();
+            }
         }
 
         private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
@@ -268,7 +250,14 @@ namespace BRModTools
 
         private void editMaterial_Click(object sender, EventArgs e)
         {
-            materialDialog(sender, e);
+            if (((string)selectModBox.SelectedItem) != "Vanilla")
+            {
+                materialDialog(sender, e);
+            }
+            else
+            {
+                vanillaReadOnlyError();
+            }
         }
 
         private void materialDialog(object sender, EventArgs e)
@@ -283,6 +272,18 @@ namespace BRModTools
                 info.ShowDialog();
                 dr.EndEdit();
         }
+
+        private void setActiveMod_Click(object sender, EventArgs e)
+        {
+            String selected = (String)selectModBox.SelectedValue;
+            if (selected != activeMod)
+            {
+                modList.Activate(selected);
+                activeMod = selected;
+            }
+           
+            refreshSelect();
+        }
     }
 
 
@@ -291,19 +292,53 @@ namespace BRModTools
     {
         ModComparator myComparer = new ModComparator();
         ArrayList mods = new ArrayList();
-        Textures textures;
+        //Textures textures;
+        public String modLocation { get; set; }
         public String location { get; set; }
+        Mod activeMod;
         public ModList(String location)
         {
             this.location = location;
-            DirectoryInfo directory = new DirectoryInfo(location);
+            this.modLocation = location+@"\Mods";
+            DirectoryInfo directory = new DirectoryInfo(modLocation);
+            FileInfo[] InfoFile = directory.GetFiles("ModInfo.xml");
+            
             DirectoryInfo[] modData = directory.GetDirectories();
-            mods.Add(new Mod("Vanilla",directory.Parent.FullName+@"\Content\Data"));
             foreach (DirectoryInfo mod in modData)
             {
                 mods.Add(new Mod(mod.Name,mod.FullName));
             }
-            textures = new Textures(directory.Parent.FullName+@"\Content\textures");//Right place?
+            //textures = new Textures(location+@"\Content\textures");//Right place?
+            if (InfoFile.Length == 0)
+            {
+                firstRun();
+            }
+            else
+            {
+                String activeMod = ModParser.readInfo(modLocation + @"\ModInfo.xml");
+                this.activeMod = getMod(activeMod);
+            }
+        }
+        public void firstRun()
+        {
+            //Copy permissions 
+            System.Security.AccessControl.DirectorySecurity sec = System.IO.Directory.GetAccessControl(modLocation);
+            FileSystemAccessRule accRule = new FileSystemAccessRule(Environment.UserDomainName + "\\" + Environment.UserName, FileSystemRights.FullControl, AccessControlType.Allow);
+            sec.AddAccessRule(accRule);
+
+            //File.Copy(location+@"\Content\Data\solids.xml",modLocation+@"\Vanilla\Content\Data\solids.xml");
+            //File.Copy(location+@"\Content",modLocation+@"\Vanilla");
+            CopyFolder.CopyAll(new DirectoryInfo(location+@"\Content"), new DirectoryInfo(modLocation + @"\Vanilla"));
+            mods.Add(new Mod("Vanilla", modLocation + @"\Vanilla"));
+            String output = ModWriter.writeInfo("Vanilla");
+
+            FileStream fs = File.Create(modLocation+@"\ModInfo.xml");
+            StreamWriter file = new StreamWriter(fs);
+            file.WriteLine(output);
+            file.Close();
+
+            activeMod = getMod("Vanilla");
+            
         }
         public void init()
         {
@@ -320,19 +355,18 @@ namespace BRModTools
             }
             
         }
-        public DataTable getTextureTable()
+        public String getActiveMod()
         {
-            return textures.getTable();
+            return activeMod.Name;
+        }
+        public DataTable getTextureTable(String name)
+        {
+            return getMod(name).getTextureTable();
         }
 
-        public ArrayList getTextures()
+        public ArrayList getTextures(String name)
         {
-            return textures.getImages();
-        }
-
-        public Image getTexture(String name)
-        {
-            return textures.getTexture(name);
+            return getMod(name).textures.getImages();
         }
 
         public void Save(String name)
@@ -351,17 +385,16 @@ namespace BRModTools
         }
         public void cloneMod(String sourceString)
         {
-            mods.Sort(myComparer);
             Mod source = getMod(sourceString);
-            Mod clone = ObjectCopier.Clone<Mod>(source);
-            while(mods.BinarySearch(new Mod(sourceString,null),myComparer)>-1)
+            source.Save();
+            while (mods.BinarySearch(new Mod(sourceString, null), myComparer) > -1)
             {
                 sourceString += "-c";
             }
-            clone.Rename(sourceString);
-            clone.location = location + "\\" + sourceString;
+            CopyFolder.CopyAll(new DirectoryInfo(source.location), new DirectoryInfo(modLocation + "\\" + sourceString));
+            Mod clone = new Mod(sourceString, modLocation + "\\" + sourceString);
             mods.Add(clone);
-            clone.Save();
+            clone.loadBlocks();
         }
         public void rename(String name, String newName)
         {
@@ -371,8 +404,8 @@ namespace BRModTools
                 newName += "-d";
             }
             mod.Name = newName;
-            Directory.Move(location+"\\"+name,location+"\\"+newName);
-            mod.location = location + "\\" + name;
+            Directory.Move(modLocation+"\\"+name,modLocation+"\\"+newName);
+            mod.location = modLocation + "\\" + newName;
         }
         public Mod getMod(String name)
         {
@@ -391,6 +424,19 @@ namespace BRModTools
         {
             Mod mod = getMod(name);
             return mod.getTable();
+        }
+
+        internal void Activate(string selected)
+        {
+            Mod newMod = getMod(selected);
+            Directory.Delete(location + @"\Content",true);
+            CopyFolder.CopyAll(new DirectoryInfo(newMod.location), new DirectoryInfo(location+@"\Content"));
+            String modInfo = ModWriter.writeInfo(newMod.Name);
+            FileStream fs = File.Create(modLocation + @"\ModInfo.xml");
+            StreamWriter file = new StreamWriter(fs);
+            file.WriteLine(modInfo);
+            file.Close();
+            activeMod = newMod;
         }
     }
 
@@ -414,6 +460,7 @@ namespace BRModTools
         public String Name { get; set; }
         public String location { get; set; }
         private DataTable Blocks;
+        public Textures textures { get; set; }
         public Mod(String name, String location)
         {
             this.Name=name;
@@ -421,8 +468,8 @@ namespace BRModTools
         }
         public void loadBlocks()
         {
-            String path = location+ "\\solids.xml";
-            StreamReader stream = new StreamReader(location +@"\solids.xml");
+            String path = location+ @"\Data\solids.xml";
+            StreamReader stream = new StreamReader(path);
             try
             {
                 Blocks = ModParser.solidsTable(path,null);
@@ -433,6 +480,8 @@ namespace BRModTools
                 MessageBox.Show("The mod " + Name + " has an invalid .xml!");
                 throw new FormatException("Mod " + Name + " threw a formatexception");
             }
+            stream.Close();
+            textures = new Textures(location + @"\Textures");
         }
         public DataTable getTable()
         {
@@ -444,11 +493,19 @@ namespace BRModTools
 
             //TODO copy files
         }
+        public DataTable getTextureTable()
+        {
+            return textures.getTable();
+        }
+        public Image getTexture(String name)
+        {
+            return textures.getTexture(name);
+        }
         public void Save()
         {
             String xml = ModWriter.outputTable(Blocks);
             System.IO.Directory.CreateDirectory(location);
-            FileStream fs = File.Create(location + @"\solids.xml");
+            FileStream fs = File.Create(location + @"\Data\solids.xml");
             StreamWriter file = new StreamWriter(fs);
             //StreamWriter file = new StreamWriter(location + @"\" + Name + @"\solids.xml");
             file.WriteLine(xml);
@@ -456,8 +513,7 @@ namespace BRModTools
          }
         public void Delete()
         {
-            File.Delete(location + @"\solids.xml");
-            Directory.Delete(location);
+            Directory.Delete(location,true);
         }
     }
     /// <summary>
@@ -498,7 +554,7 @@ namespace BRModTools
             }
         }
     }
-
+    [Serializable()]
     public class Textures
     {
         ArrayList images;
@@ -558,6 +614,7 @@ namespace BRModTools
         /// <returns>A Bitmap object that can be displayed</returns>
         
     }
+    [Serializable()]
     public class Texture
     {
         public Image Image { get; set; }
@@ -593,6 +650,31 @@ namespace BRModTools
                     RealName = actualName;
                 }
             }*/
+        }
+    }
+    public static class CopyFolder
+    {
+        public static void CopyAll(DirectoryInfo source, DirectoryInfo target)
+        {
+            // Check if the target directory exists, if not, create it.
+            if (Directory.Exists(target.FullName) == false)
+            {
+                Directory.CreateDirectory(target.FullName);
+            }
+
+            // Copy each file into it’s new directory.
+            foreach (FileInfo fi in source.GetFiles())
+            {
+                fi.CopyTo(Path.Combine(target.ToString(), fi.Name), true);
+            }
+
+            // Copy each subdirectory using recursion.
+            foreach (DirectoryInfo diSourceSubDir in source.GetDirectories())
+            {
+                DirectoryInfo nextTargetSubDir =
+                    target.CreateSubdirectory(diSourceSubDir.Name);
+                CopyAll(diSourceSubDir, nextTargetSubDir);
+            }
         }
     }
 }

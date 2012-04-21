@@ -58,9 +58,12 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
+            //this.userControl11 = new WpfTest2.UserControl1();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
             this.SuspendLayout();
             // 
             // pictureBox1
@@ -314,6 +317,7 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.elementHost1);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
@@ -321,6 +325,15 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Voxel";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // elementHost1
+            // 
+            this.elementHost1.Location = new System.Drawing.Point(6, 7);
+            this.elementHost1.Name = "elementHost1";
+            this.elementHost1.Size = new System.Drawing.Size(236, 243);
+            this.elementHost1.TabIndex = 0;
+            this.elementHost1.Text = "elementHost1";
+            this.elementHost1.Child = this.userControl11;
             // 
             // BlockInfo
             // 
@@ -361,6 +374,7 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
+            this.tabPage2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -399,5 +413,7 @@
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
         private OpenTK.GLControl glControl1;
+        private System.Windows.Forms.Integration.ElementHost elementHost1;
+        private BRModTools.UserControl1 userControl11;
     }
 }

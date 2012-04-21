@@ -8,6 +8,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Drawing.Imaging;
+using BRModTools;
+using System.Windows.Interop;
 
 namespace BRModTools
 {
@@ -55,6 +61,7 @@ namespace BRModTools
             RenderBox.Items.AddRange(Main.RENDER_TYPES);//TODO add width calculator and auto
         }
 
+
         private void label1_Click(object sender, EventArgs e)
         {
 
@@ -93,30 +100,75 @@ namespace BRModTools
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            String location = modList.location;
+            String location = modList.modLocation;
             DirectoryInfo directory = new DirectoryInfo(location);
             String texturePath = directory.Parent.FullName + @"\Content\textures";
             texture = new Texture(texturePath, TextureBox.Text).Image;
             pictureBox1.Image = texture;
+            BlockRender render = new BlockRender((Bitmap)texture);
+            this.userControl11 = new UserControl1(render.getFaces(0));
+            this.elementHost1.Child = this.userControl11;
+            
+        }
+    }
+
+    public class BlockRender
+    {
+        public static int RENDER_STANDARD = 0;
+        public static int RENDER_RANDOM = 1;
+        public static int RENDER_CYLINDER_RANDOM = 2;
+        public static int RENDER_CYLINDERYAW_RANDOM = 3;
+
+        public Bitmap[] sectionBit = new Bitmap[4];
+        public BitmapSource[] sections = new BitmapSource[4]; //TL,TR,BL,BR
+        public BlockRender(Bitmap input)
+        {
+            sections[0] = ToBitmapSource(input.Clone(new Rectangle(0, 0, 128, 128), input.PixelFormat));
+            sections[1] = ToBitmapSource(input.Clone(new Rectangle(128, 0, 128, 128), input.PixelFormat));
+            sections[2] = ToBitmapSource(input.Clone(new Rectangle(0, 128, 128, 128), input.PixelFormat));
+            sections[3] = ToBitmapSource(input.Clone(new Rectangle(128, 128, 128, 128), input.PixelFormat));
         }
 
-        private void glControl1_Load(object sender, EventArgs e)
+        public BitmapSource[] getFaces(int mode)
         {
-
+            BitmapSource[] faces = {sections[0],sections[0],sections[1],sections[2],sections[3],sections[3]};
+            return faces;
         }
 
-        /*private void glControl1_Load(object sender, EventArgs e)
+        private Bitmap BitmapImage2Bitmap(BitmapImage bitmapImage)
         {
-            loaded = true;
-            GL.ClearColor(Color.SkyBlue);
-        }
 
-        private void glControl1_Paint(object sender, PaintEventArgs e)
+            using (MemoryStream outStream = new MemoryStream())
+            {
+                BitmapEncoder enc = new BmpBitmapEncoder();
+                enc.Frames.Add(BitmapFrame.Create(bitmapImage));
+                enc.Save(outStream);
+                System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap(outStream);
+
+                // return bitmap; <-- leads to problems, stream is closed/closing ...
+                return new Bitmap(bitmap);
+            }
+        }
+        public BitmapSource ToBitmapSource(System.Drawing.Bitmap source)
         {
-            if (!loaded)
-                return;
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            glControl1.SwapBuffers();
-        }*/
+            BitmapSource bitSrc = null;
+
+            var hBitmap = source.GetHbitmap();
+
+            try
+            {
+                bitSrc = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
+                    hBitmap,
+                    IntPtr.Zero,
+                    Int32Rect.Empty,
+                    BitmapSizeOptions.FromEmptyOptions());
+            }
+            catch (Win32Exception)
+            {
+                bitSrc = null;
+            }
+
+            return bitSrc;
+        }
     }
 }

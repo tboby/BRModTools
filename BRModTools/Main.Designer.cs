@@ -1,4 +1,5 @@
-﻿namespace BRModTools
+﻿using System.Windows.Forms;
+namespace BRModTools
 {
     partial class Main
     {
@@ -44,6 +45,7 @@
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
             this.serviceController1 = new System.ServiceProcess.ServiceController();
+            this.setActiveMod = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -54,6 +56,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.setActiveMod);
             this.groupBox1.Controls.Add(this.button2);
             this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.selectMod);
@@ -128,6 +131,7 @@
             this.selectModBox.Name = "selectModBox";
             this.selectModBox.Size = new System.Drawing.Size(192, 186);
             this.selectModBox.TabIndex = 0;
+            this.selectModBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.DrawItemHandler);
             this.selectModBox.SelectedIndexChanged += new System.EventHandler(this.selectModBox_SelectedIndexChanged);
             // 
             // tabControl1
@@ -224,6 +228,17 @@
             this.dataGridView2.Size = new System.Drawing.Size(545, 415);
             this.dataGridView2.TabIndex = 0;
             // 
+            // setActiveMod
+            // 
+            this.setActiveMod.Enabled = false;
+            this.setActiveMod.Location = new System.Drawing.Point(7, 315);
+            this.setActiveMod.Name = "setActiveMod";
+            this.setActiveMod.Size = new System.Drawing.Size(94, 23);
+            this.setActiveMod.TabIndex = 6;
+            this.setActiveMod.Text = "Set Active Mod";
+            this.setActiveMod.UseVisualStyleBackColor = true;
+            this.setActiveMod.Click += new System.EventHandler(this.setActiveMod_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -262,5 +277,6 @@
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.DataGridView dataGridView2;
         private System.Windows.Forms.Button editMaterial;
+        private Button setActiveMod;
     }
 }

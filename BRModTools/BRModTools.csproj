@@ -71,9 +71,12 @@
     <Reference Include="OpenTK.GLControl">
       <HintPath>.\OpenTK.GLControl.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -86,6 +89,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\Tao.DevIl.dll</HintPath>
     </Reference>
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BlockInfo.cs">
@@ -103,6 +109,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserControl1.xaml.cs" />
     <EmbeddedResource Include="BlockInfo.resx">
       <DependentUpon>BlockInfo.cs</DependentUpon>
     </EmbeddedResource>
@@ -173,7 +180,12 @@
     <Content Include="OpenTK.dll" />
     <Content Include="Tao.DevIl.dll" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Page Include="UserControl1.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -74,6 +74,25 @@ namespace BRModTools
             }
             return output;
         }
+        public static String readInfo(String modInfo)
+        {
+            String activeMod;
+            String xmlInput = new System.IO.StreamReader(modInfo).ReadToEnd();
+            try
+            {
+                using (XmlReader reader = XmlReader.Create(new StringReader(xmlInput)))
+                {
+                    reader.ReadToFollowing("ActiveMod");//Skips to first element
+                    reader.MoveToAttribute("Name");
+                    activeMod = reader.Value;
+                }
+            }
+            catch (Exception)
+            {
+                throw new System.FormatException("Error in XML file, are you sure it's formatted right?");
+            }
+            return activeMod;
+        }
     }
     /// <summary>
     /// Takes the mod files and writes them to file
@@ -102,6 +121,14 @@ namespace BRModTools
                 output += "/>\r\n";
             }
             output += "</Solids>";
+            return output;
+        }
+        //TODO: Make it more xml automatic
+        internal static String writeInfo(string activeMod)
+        {
+            String output = "<?xml version=\"1.0\"?>\r\n<ModInfo>\r\n<ActiveMod Name=\"";
+            output += activeMod;
+            output+="\"/>\r\n</ModInfo>";
             return output;
         }
     }
