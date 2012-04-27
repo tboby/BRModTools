@@ -3,6 +3,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	x:Class="BRModTools.UserControl1"
     xmlns:local="clr-namespace:BRModTools"
+    xmlns:helix="clr-namespace:HelixToolkit;assembly=HelixToolkit"
 	x:Name="UserControl"
 	Height="300" Width="300">
     <UserControl.Resources>
@@ -38,29 +39,8 @@
             <GradientStop Color="Red" Offset="1"/>
         </LinearGradientBrush>
     </UserControl.Background>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="20"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="20"/>
-        </Grid.ColumnDefinitions>
 
-        <Slider Name="sliX" Grid.Row="0" Grid.Column="1" Orientation="Vertical" 
-		 Minimum="-90" Maximum="90" Value="-20"
-		 TickFrequency="10" TickPlacement="None">
-            <Slider.LayoutTransform>
-                <ScaleTransform ScaleX="1" ScaleY="-1"/>
-            </Slider.LayoutTransform>
-        </Slider>
-
-        <Slider Name="sliY" Grid.Row="1" Grid.Column="0" Orientation="Horizontal"
-		 Minimum="-180" Maximum="180" Value="-30"
-		 TickFrequency="10" TickPlacement="None"/>
-
-        <Viewport3D Camera="{DynamicResource Camera}">
+    <helix:HelixViewport3D ModelUpDirection="0,1,0">
             <ModelVisual3D>
                 <ModelVisual3D.Content>
                     <Model3DGroup>
@@ -161,6 +141,6 @@
                     </Model3DGroup>
                 </ModelVisual3D.Content>
             </ModelVisual3D>
-        </Viewport3D>
-    </Grid>
+        </helix:HelixViewport3D>
+    
 </UserControl>

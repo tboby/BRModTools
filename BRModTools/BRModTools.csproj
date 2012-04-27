@@ -71,6 +71,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\DevIL.NET.dll</HintPath>
     </Reference>
+    <Reference Include="HelixToolkit, Version=2011.10.1.0, Culture=neutral, PublicKeyToken=52aa3500039caf0d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\HelixToolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="HelixToolkit.Input, Version=2011.10.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\HelixToolkit.Input.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="OpenTK.GLControl">
       <HintPath>.\OpenTK.GLControl.dll</HintPath>
@@ -184,6 +192,12 @@
     <EmbeddedResource Include="DevIL.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <Content Include="HelixToolkit.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HelixToolkit.Input.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="OpenTK.dll" />
     <EmbeddedResource Include="Tao.DevIl.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

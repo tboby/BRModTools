@@ -8,6 +8,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helixtoolkit.dll")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helixtoolkit.input.dll")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("opentk.dll")]
 
 

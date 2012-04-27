@@ -25,11 +25,12 @@ namespace BRModTools
         DataView dv;
         Image texture;
         ModList modList;
-        public BlockInfo(DataTable dataTable, String name, ModList modList)
+        Mod curMod;
+        public BlockInfo(DataTable dataTable, String name, ModList modList, Mod curMod)
         {
             data = dataTable;
             this.modList = modList;
-            
+            this.curMod = curMod;
             this.name = name;
             InitializeComponent();
             loadData();
@@ -102,9 +103,10 @@ namespace BRModTools
         {
             if (ClassBox.Text != "Prefab")
             {
-                String location = modList.modLocation;
+                //String location = modList.modLocation;
+                String location = curMod.location;
                 DirectoryInfo directory = new DirectoryInfo(location);
-                String texturePath = directory.Parent.FullName + @"\Content\textures";
+                String texturePath = location + @"\\textures";
                 texture = new Texture(texturePath, TextureBox.Text).Image;
                 pictureBox1.Image = texture;
                 BlockRender render = new BlockRender((Bitmap)texture);

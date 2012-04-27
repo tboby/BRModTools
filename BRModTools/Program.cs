@@ -32,7 +32,17 @@ namespace BRModTools
     /// </summary>
     public static class ModParser
     {
-       
+        public static DataTable emptySolidsTable()
+        {
+            DataTable output = new DataTable("Materials");
+            String[] solidParams = { "Category", "Type", "DescLong", "DescShort", "Flags", "HP", "Mass", "RenderType", "Tags", "TexturePath", "ModelPath" };
+            output.Columns.Add("Name");
+            foreach (String param in solidParams)
+            {
+                output.Columns.Add(param);
+            }
+            return output;
+        }
         public static DataTable solidsTable(String solids, String modInformation)
         {
             DataTable output = new DataTable("Materials");
@@ -74,9 +84,10 @@ namespace BRModTools
             }
             return output;
         }
-        public static String readInfo(String modInfo)
+        public static ModInfo readInfo(String modInfo)
         {
             String activeMod;
+            ModInfo info = new ModInfo();
             String xmlInput = new System.IO.StreamReader(modInfo).ReadToEnd();
             try
             {
@@ -85,13 +96,20 @@ namespace BRModTools
                     reader.ReadToFollowing("ActiveMod");//Skips to first element
                     reader.MoveToAttribute("Name");
                     activeMod = reader.Value;
+                    while (reader.ReadToFollowing("ActiveAddon"))
+                    {
+                        reader.MoveToAttribute("Name");
+                        info.addAddon(reader.Value);
+                    }
                 }
             }
             catch (Exception)
             {
                 throw new System.FormatException("Error in XML file, are you sure it's formatted right?");
             }
-            return activeMod;
+            
+            info.activeMod = activeMod;
+            return info;
         }
     }
     /// <summary>
