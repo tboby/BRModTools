@@ -29,6 +29,7 @@ namespace BRModTools
         AddonList addonList;
         DataTable data;
         DataTable dataTex;
+        DataTable dataPref;
         Boolean first = true;
         String activeMod;
         ArrayList activeAddons;
@@ -202,6 +203,7 @@ namespace BRModTools
                 }
             }
             dataGridView2.DataSource = modList.getTextureTable((string)selectModBox.SelectedItem);
+            dataGridView3.DataSource = modList.getPrefabTable((string)selectModBox.SelectedItem);
             refreshSelect();
         }
 
@@ -246,13 +248,16 @@ namespace BRModTools
                 {
                     data = modList.getTable(selected);
                     dataTex = modList.getTextureTable(selected);
+                    dataPref = modList.getPrefabTable(selected);
                     dataGridView1.DataSource = data;
                     dataGridView2.DataSource = dataTex;
+                    dataGridView3.DataSource = dataPref;
                 }
                 else
                 {
-                    dataGridView2.DataSource =data= null;
-                    dataGridView1.DataSource =dataTex= null;
+                    dataGridView3.DataSource = dataPref = null;
+                    dataGridView2.DataSource = data = null;
+                    dataGridView1.DataSource = dataTex = null;
                 }
             }
             else
@@ -262,11 +267,14 @@ namespace BRModTools
                 {
                     data = addonList.getTable(selected);
                     dataTex = addonList.getTextureTable(selected);
+                    dataPref = addonList.getPrefabTable(selected);
                     dataGridView1.DataSource = data;
                     dataGridView2.DataSource = dataTex;
+                    dataGridView3.DataSource = dataPref;
                 }
                 else
                 {
+                    dataGridView3.DataSource = dataPref = null;
                     dataGridView2.DataSource = data = null;
                     dataGridView1.DataSource = dataTex = null;
                 }
@@ -469,6 +477,7 @@ namespace BRModTools
             {
                 dataGridView1.DataSource =data= modList.getTable((string)selectModBox.SelectedItem);
                 dataGridView2.DataSource =dataTex= modList.getTextureTable((string)selectModBox.SelectedItem);
+                dataGridView3.DataSource = dataPref = modList.getPrefabTable((string)selectModBox.SelectedItem);
                 //Display the selected items
                 matEnabled = true;
             }
@@ -478,6 +487,7 @@ namespace BRModTools
                 {
                     dataGridView1.DataSource =data= null;
                     dataGridView2.DataSource =dataTex= null;
+                    dataGridView3.DataSource = dataPref = null;
                     //Nothing to display, so disable buttons and stuff
                     matEnabled = false;
                 }
@@ -485,6 +495,7 @@ namespace BRModTools
                 {
                     dataGridView1.DataSource =data= addonList.getTable((string)selectAddonBox.SelectedItem);
                     dataGridView2.DataSource =dataTex= addonList.getTextureTable((string)selectAddonBox.SelectedItem);
+                    dataGridView3.DataSource = dataPref = addonList.getPrefabTable((string)selectAddonBox.SelectedItem);
                     //Display the selected item
                     matEnabled = true;
                 }
@@ -628,6 +639,10 @@ namespace BRModTools
             }
             setActiveAddons(actualActiveAddons);
         }
+        public DataTable getPrefabTable(String name)
+        {
+            return getAddon(name).getPrefabTable();
+        }
         public void setActiveAddons(ArrayList addons)
         {
             this.activeAddons = addons;
@@ -686,6 +701,7 @@ namespace BRModTools
                 {
                     addon.loadBlocks();
                     addon.loadTextures();
+                    addon.loadPrefabs();
                 }
             }
             catch (FormatException)
@@ -744,6 +760,7 @@ namespace BRModTools
             addons.Add(clone);
             clone.loadBlocks();
             clone.loadTextures();
+            clone.loadPrefabs();
         }
         public void rename(String name, String newName)
         {
@@ -791,6 +808,14 @@ namespace BRModTools
                 StreamWriter file = new StreamWriter(fs);
                 file.WriteLine(output);
                 file.Close();
+            }
+            if (addon.hasPrefabs)
+            {
+                List<Prefab> prefabs = addon.getPrefabs();
+                foreach (Prefab prefab in prefabs)
+                {
+                    CopyFolder.CopyAll(new DirectoryInfo(prefab.Path), new DirectoryInfo(location + @"\Content\prefabs\" + addon.getName() + "-" + prefab.Name));
+                }
             }
             if (activeAddons == null)
             {
@@ -892,6 +917,7 @@ namespace BRModTools
                 {
                     mod.loadBlocks();
                     mod.loadTextures();
+                    mod.loadPrefabs();
                 }
             }
             catch (FormatException)
@@ -914,6 +940,10 @@ namespace BRModTools
             return getMod(name).textures.getImages();
         }
 
+        public DataTable getPrefabTable(String name)
+        {
+            return getMod(name).getPrefabTable();
+        }
         public void Save(String name)
         {
             Mod mod = getMod(name);
@@ -1060,6 +1090,20 @@ namespace BRModTools
             hasTextures = true;
             return true;
         }
+        public bool loadPrefabs()
+        {
+            try
+            {
+                mod.loadPrefabs();
+            }
+            catch (DirectoryNotFoundException)
+            {
+                hasPrefabs = false;
+                return false;
+            }
+            hasPrefabs = true;
+            return true;
+        }
         public DataTable getTable()
         {
             return mod.getTable();
@@ -1067,6 +1111,14 @@ namespace BRModTools
         public Textures getTextures()
         {
             return mod.textures;
+        }
+        public DataTable getPrefabTable()
+        {
+            return mod.getPrefabTable();
+        }
+        public List<Prefab> getPrefabs()
+        {
+            return mod.getPrefabs();
         }
         public void Rename(String name)
         {
@@ -1103,6 +1155,7 @@ namespace BRModTools
         public String location { get; set; }
         private DataTable Blocks;
         public Textures textures { get; set; }
+        public Prefabs prefabs { get; set; }
         public Mod(String name, String location)
         {
             this.Name=name;
@@ -1137,6 +1190,10 @@ namespace BRModTools
         {
             textures = new Textures(location + @"\Textures");
         }
+        public void loadPrefabs()
+        {
+            prefabs = new Prefabs(location + @"\Prefabs");
+        }
         public DataTable getTable()
         {
             return Blocks;
@@ -1155,6 +1212,11 @@ namespace BRModTools
         public Image getTexture(String name)
         {
             return textures.getTexture(name);
+        }
+        public DataTable getPrefabTable()
+        {
+            if (prefabs == null) { return null; }
+            return prefabs.getTable();
         }
         public void Save()
         {
@@ -1182,6 +1244,11 @@ namespace BRModTools
         internal void newTable()
         {
             Blocks = ModParser.emptySolidsTable();
+        }
+
+        internal List<Prefab> getPrefabs()
+        {
+            return prefabs.getPrefabs();
         }
     }
     /// <summary>
@@ -1220,6 +1287,36 @@ namespace BRModTools
                 stream.Seek(0, SeekOrigin.Begin);
                 return (T)formatter.Deserialize(stream);
             }
+        }
+    }
+    public class Prefabs
+    {
+        List<Prefab> prefabs;
+        DataTable dataTable;
+        public Prefabs(String path)
+        {
+            prefabs = new List<Prefab>();
+
+            dataTable = new DataTable();
+            dataTable.Columns.Add("Prefab Name");
+
+            DirectoryInfo dir = new DirectoryInfo(path);
+            DirectoryInfo[] prefabDirs = dir.GetDirectories();
+            foreach(DirectoryInfo prefabDir in prefabDirs)
+            {
+                Prefab prefab = new Prefab(prefabDir.FullName);
+                prefabs.Add(prefab);
+                dataTable.Rows.Add(prefab.Name);
+            }
+        }
+        public DataTable getTable()
+        {
+            return dataTable;
+        }
+
+        internal List<Prefab> getPrefabs()
+        {
+            return prefabs;
         }
     }
     [Serializable()]
@@ -1319,6 +1416,24 @@ namespace BRModTools
                 Image = null;
                 Specular=null;
             }
+        }
+    }
+    public class Prefab
+    {
+        public String Name { get; set; }
+        public String Path { get; set; }
+        public String objectPath { get; set; }
+        public String diffusePath { get; set; }
+        public String specialPath { get; set; }
+        public Prefab(String folderPath)
+        {
+            Path = folderPath;
+            DirectoryInfo di = new DirectoryInfo(folderPath);
+            Name = di.Name;
+            objectPath = folderPath + @"\model.obj";
+            diffusePath = folderPath + @"\texture-diffuse.dds";
+            specialPath = folderPath + @"\texture-special.dds";
+
         }
     }
     public static class CopyFolder

@@ -156,7 +156,25 @@ namespace BRModTools
                 {
                     if (attribute == "TexturePath")
                     {
-                        output += attribute + "=\"" + addonName + "-" + row[attribute] + "\" ";
+                        if ((string)row[attribute] == "texture")
+                        {
+                            output += attribute + "=\"" + row[attribute] + "\" ";
+                        }
+                        else
+                        {
+                            output += attribute + "=\"" + addonName + "-" + row[attribute] + "\" ";
+                        }
+                    }
+                    else if (attribute == "ModelPath")
+                    {
+                        if ((string)row[attribute] != "")
+                        {
+                            output += attribute + "=\"" + addonName + "-" + row[attribute] + "\" ";
+                        }
+                        else
+                        {
+                            output += attribute + "=\"" + row[attribute] + "\" ";
+                        }
                     }
                     else if (attribute != "Name")
                     {

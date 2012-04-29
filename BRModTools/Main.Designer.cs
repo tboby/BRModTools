@@ -56,6 +56,7 @@ namespace BRModTools
             this.removeAddon = new System.Windows.Forms.Button();
             this.addAddon = new System.Windows.Forms.Button();
             this.selectAddonBox = new System.Windows.Forms.ListBox();
+            this.dataGridView3 = new System.Windows.Forms.DataGridView();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -65,6 +66,7 @@ namespace BRModTools
             this.tabControl2.SuspendLayout();
             this.tabPage4.SuspendLayout();
             this.tabPage5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).BeginInit();
             this.SuspendLayout();
             // 
             // setActiveMod
@@ -239,6 +241,7 @@ namespace BRModTools
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.dataGridView3);
             this.tabPage2.Controls.Add(this.listView1);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
@@ -359,6 +362,16 @@ namespace BRModTools
             this.selectAddonBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.DrawAddonItemHandler);
             this.selectAddonBox.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             // 
+            // dataGridView3
+            // 
+            this.dataGridView3.AllowUserToAddRows = false;
+            this.dataGridView3.AllowUserToDeleteRows = false;
+            this.dataGridView3.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView3.Location = new System.Drawing.Point(4, 4);
+            this.dataGridView3.Name = "dataGridView3";
+            this.dataGridView3.Size = new System.Drawing.Size(545, 415);
+            this.dataGridView3.TabIndex = 1;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -378,6 +391,7 @@ namespace BRModTools
             this.tabControl2.ResumeLayout(false);
             this.tabPage4.ResumeLayout(false);
             this.tabPage5.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -411,5 +425,6 @@ namespace BRModTools
         private Button saveAddon;
         private Button removeAddon;
         private Button addAddon;
+        private DataGridView dataGridView3;
     }
 }
