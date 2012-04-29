@@ -15,6 +15,7 @@ using System.Windows.Forms;
 using Tao.DevIl;
 using System.Drawing.Imaging;
 using System.Security.AccessControl;
+using System.Text.RegularExpressions;
 
 namespace BRModTools
 {
@@ -30,7 +31,10 @@ namespace BRModTools
         DataTable dataTex;
         Boolean first = true;
         String activeMod;
+        ArrayList activeAddons;
+        List<String> loadedTextures;
         bool isModActive;
+        String gameLocation;
         public Main()
         {
             isModActive = true;
@@ -75,7 +79,7 @@ namespace BRModTools
             DirectoryInfo dr = exe.Directory;
             FileInfo brExe = new FileInfo(dr.FullName+@"\blockaderunner.exe");
             FolderBrowserDialog folderBrowserDialog1 = new FolderBrowserDialog();
-            if (brExe.Exists) { folderBrowserDialog1.SelectedPath=dr.FullName; }
+            if (brExe.Exists) { folderBrowserDialog1.SelectedPath = dr.FullName; gameLocation = dr.FullName; }
             DialogResult result = folderBrowserDialog1.ShowDialog();
             if (folderBrowserDialog1.SelectedPath != "" && result == DialogResult.OK)
             {
@@ -145,14 +149,22 @@ namespace BRModTools
 
         internal bool isActiveAddon(string name)
         {
-            if (addonList.getActiveAddons() != null)
+            if (addonList.getActiveAddonNames() != null)
+            {
+                foreach (String addon in addonList.getActiveAddonNames())
+                {
+                    if (addon == name)
+                        return true;
+                }
+            }
+            /*if (addonList.getActiveAddons() != null)
             {
                 foreach (String addon in addonList.getActiveAddons())
                 {
                     if (addon == name)
                         return true;
                 }
-            }
+            }*/
             return false;
         }
 
@@ -239,8 +251,8 @@ namespace BRModTools
                 }
                 else
                 {
-                    dataGridView2.DataSource = null;
-                    dataGridView1.DataSource = null;
+                    dataGridView2.DataSource =data= null;
+                    dataGridView1.DataSource =dataTex= null;
                 }
             }
             else
@@ -255,8 +267,8 @@ namespace BRModTools
                 }
                 else
                 {
-                    dataGridView2.DataSource = null;
-                    dataGridView1.DataSource = null;
+                    dataGridView2.DataSource = data = null;
+                    dataGridView1.DataSource = dataTex = null;
                 }
             }
             if (first)
@@ -345,7 +357,7 @@ namespace BRModTools
         }
         void activeReadOnlyError()
         {
-            MessageBox.Show("You can't modify the active mod for now", "Invalid Mod");
+            MessageBox.Show("You can't modify an active mod or addon for now", "Invalid Operation");
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -407,14 +419,21 @@ namespace BRModTools
         private void materialDialog(object sender, EventArgs e)
         {
             BindingManagerBase bm = dataGridView1.BindingContext[dataGridView1.DataSource, dataGridView1.DataMember];
-            DataRow dr = ((DataRowView)bm.Current).Row;
+            try
+            {
+                DataRow dr = ((DataRowView)bm.Current).Row;
                 //DataRow dataRow = data.Rows[row];
                 //String name = (String)dataRow.ItemArray[0];
                 //TODO REPLACE THIS METHOD WITH REAL DATA BINDING
                 String name = (string)dr.ItemArray[0];
-                BlockInfo info = new BlockInfo(data, name,modList,modList.getMod((string)selectModBox.SelectedItem));
+                BlockInfo info = new BlockInfo((DataTable)dataGridView1.DataSource, name, modList, modList.getMod((string)selectModBox.SelectedItem));
                 info.ShowDialog();
                 dr.EndEdit();
+            }
+            catch (IndexOutOfRangeException)
+            {
+
+            }
         }
 
         private void setActiveMod_Click(object sender, EventArgs e)
@@ -424,8 +443,17 @@ namespace BRModTools
             {
                 modList.Activate(selected);
                 activeMod = selected;
+                addonList.setActiveAddons(null);
+                //Add all the texture names to
+                /*ArrayList images = modList.getTextures(selected);
+                loadedTextures = new List<String>();
+                foreach (Texture texture in images)
+                {
+                    loadedTextures.Add(texture.Name);
+                }*/
+
             }
-           
+            writeModInfo();
             refreshSelect();
         }
 
@@ -439,8 +467,8 @@ namespace BRModTools
             bool matEnabled;
             if (tabControl2.SelectedIndex == 0)//If first tab selected
             {
-                dataGridView1.DataSource = modList.getTable((string)selectModBox.SelectedItem);
-                dataGridView2.DataSource = modList.getTextureTable((string)selectModBox.SelectedItem);
+                dataGridView1.DataSource =data= modList.getTable((string)selectModBox.SelectedItem);
+                dataGridView2.DataSource =dataTex= modList.getTextureTable((string)selectModBox.SelectedItem);
                 //Display the selected items
                 matEnabled = true;
             }
@@ -448,15 +476,15 @@ namespace BRModTools
             {
                 if (addonList.isEmpty)
                 {
-                    dataGridView1.DataSource = null;
-                    dataGridView2.DataSource = null;
+                    dataGridView1.DataSource =data= null;
+                    dataGridView2.DataSource =dataTex= null;
                     //Nothing to display, so disable buttons and stuff
                     matEnabled = false;
                 }
                 else
                 {
-                    dataGridView1.DataSource = addonList.getTable((string)selectAddonBox.SelectedItem);
-                    dataGridView2.DataSource = addonList.getTextureTable((string)selectAddonBox.SelectedItem);
+                    dataGridView1.DataSource =data= addonList.getTable((string)selectAddonBox.SelectedItem);
+                    dataGridView2.DataSource =dataTex= addonList.getTextureTable((string)selectAddonBox.SelectedItem);
                     //Display the selected item
                     matEnabled = true;
                 }
@@ -484,8 +512,15 @@ namespace BRModTools
         {
             selectBoxReady = false;
             String selected = (String)selectAddonBox.SelectedValue;
-            addonList.Remove(selected);
-            refreshSelect();
+            if (isActiveAddon(selected))
+            {
+                activeReadOnlyError();
+            }
+            else
+            {
+                addonList.Remove(selected);
+                refreshSelect();
+            }
             selectBoxReady = true;
             
         }
@@ -499,14 +534,52 @@ namespace BRModTools
 
         private void renameAddon_Click(object sender, EventArgs e)
         {
-            string input = Microsoft.VisualBasic.Interaction.InputBox("Rename Addon", "Enter the new addon name");
-            if (!input.Equals(""))
+            String selected = (String)selectAddonBox.SelectedValue;
+            if (isActiveAddon(selected))
             {
-                selectBoxReady = false;
-                addonList.rename((string)selectAddonBox.SelectedItem, input);
+                activeReadOnlyError();
             }
+            else
+            {
+                string input = Microsoft.VisualBasic.Interaction.InputBox("Rename Addon", "Enter the new addon name");
+                if (!input.Equals(""))
+                {
+                    selectBoxReady = false;
+                    addonList.rename((string)selectAddonBox.SelectedItem, input);
+                }
+                refreshSelect();
+                selectBoxReady = true;
+            }
+        }
+
+        private void activeDeactiveAddon_Click(object sender, EventArgs e)
+        {
+            String selected = (String)selectAddonBox.SelectedValue;
+            if (!isActiveAddon(selected))
+            {
+                addonList.Activate(selected);
+            }
+            else
+            {
+                addonList.SetUnactiveAddons(selected);
+                modList.Activate(modList.activeMod.Name);
+                ArrayList activeAddons = addonList.getActiveAddonNames();
+                addonList.setActiveAddons(new ArrayList());
+                foreach (String addon in activeAddons)
+                {
+                    addonList.Activate(addon);
+                }
+            }
+            writeModInfo();
             refreshSelect();
-            selectBoxReady = true;
+        }
+        private void writeModInfo()
+        {
+            String modInfo = ModWriter.writeInfo(modList.activeMod.Name, addonList.getActiveAddonNames());
+            FileStream fs = File.Create(modList.modLocation + @"\ModInfo.xml");
+            StreamWriter file = new StreamWriter(fs);
+            file.WriteLine(modInfo);
+            file.Close();
         }
     }
 
@@ -516,7 +589,8 @@ namespace BRModTools
         ArrayList addons = new ArrayList();
         public String addonLocation { get; set; }
         public String location { get; set; }
-        public ArrayList activeAddons { get; set; }
+        private ArrayList activeAddons;
+        public ArrayList activeAddonNames { get; set; }
         public ModInfo info { get; set; }
         public bool isEmpty=true;
         public AddonList(String location,ModInfo info)
@@ -530,6 +604,7 @@ namespace BRModTools
             DirectoryInfo[] addonData = directory.GetDirectories();
             
             
+
             if (addonData.Length>0)
             {
                 isEmpty = false;
@@ -542,9 +617,43 @@ namespace BRModTools
             {
                 isEmpty = true;
             }
-            activeAddons = info.activeAddons;
+            ArrayList actualActiveAddons = new ArrayList();
+            foreach (String addonName in info.activeAddons)
+            {
+                Addon addon = getAddon(addonName);
+                if (addon != null)
+                {
+                    actualActiveAddons.Add(addon);
+                }
+            }
+            setActiveAddons(actualActiveAddons);
+        }
+        public void setActiveAddons(ArrayList addons)
+        {
+            this.activeAddons = addons;
+            ArrayList names = new ArrayList();
+            if (activeAddons != null)
+            {
+                foreach (Addon addon in activeAddons)
+                {
+                    names.Add(addon.getName());
+                }
+                activeAddonNames = names; ;
+            }
+            else
+            {
+                activeAddonNames = new ArrayList();
+            }
         }
         public ArrayList getActiveAddons()
+        {
+            return activeAddons;
+        }
+        public ArrayList getActiveAddonNames()
+        {
+            return activeAddonNames;
+        }
+        /*public ArrayList getActiveAddons()
         {
             ArrayList names = new ArrayList();
             if (activeAddons != null)
@@ -556,7 +665,7 @@ namespace BRModTools
                 return names;
             }
             return null;
-        }
+        }*/
         public void addAddon(String name)
         {
             
@@ -589,8 +698,15 @@ namespace BRModTools
         {
             addons.Sort(myComparer);
             Addon search = new Addon(name, null);
-
-            return (Addon)addons[addons.BinarySearch(search, myComparer)];
+            int index = addons.BinarySearch(search, myComparer);
+            if (index > -1)
+            {
+                return (Addon)addons[addons.BinarySearch(search, myComparer)];
+            }
+            else
+            {
+                return null;
+            }
         }
         public DataTable getTextureTable(String name)
         {
@@ -651,9 +767,38 @@ namespace BRModTools
             Addon mod = getAddon(name);
             return mod.getTable();
         }
-        internal void Active(String name)
+        internal void Activate(String name)
         {
-            throw new NotImplementedException();
+            Addon addon = getAddon(name);
+            if (addon.hasTextures)
+            {
+                ArrayList images = addon.getTextures().getImages();
+                foreach (Texture image in images)
+                {
+                    File.Copy(image.Path + @"-diffuse.dds", location + @"\Content\textures\" + addon.getName() + "-" + image.Name + @"-diffuse.dds");
+                    File.Copy(image.Path + @"-special.dds", location + @"\Content\textures\" + addon.getName() + "-" + image.Name + @"-special.dds");
+
+                }
+            }
+            if (addon.hasMaterials)
+            {
+                StreamReader reader = new System.IO.StreamReader(location+@"\Content\Data\solids.xml");
+                String curXml = reader.ReadToEnd();
+                reader.Close();
+                String firstPart = Regex.Split(curXml, @"</Solids>")[0];
+                String output = firstPart + ModWriter.addonTable(addon.getTable(), addon.getName()) + @"</Solids>";
+                FileStream fs = File.Create(location + @"\Content\Data\solids.xml");
+                StreamWriter file = new StreamWriter(fs);
+                file.WriteLine(output);
+                file.Close();
+            }
+            if (activeAddons == null)
+            {
+                setActiveAddons(new ArrayList());
+            }
+            activeAddons.Add(addon);
+            setActiveAddons(getActiveAddons());
+            
         }
 
         internal DataTable getNewTable(string name)
@@ -662,12 +807,22 @@ namespace BRModTools
             addon.newTable();
             return addon.getTable();
         }
+
+        internal void SetUnactiveAddons(string selected)
+        {
+            ArrayList cur = getActiveAddons();
+            cur.Remove(getAddon(selected));
+            setActiveAddons(cur);
+        }
     }
     public class ModInfo
     {
         public String activeMod { get; set; }
         public ArrayList activeAddons { get; set; }
-
+        public ModInfo()
+        {
+            activeAddons = new ArrayList();
+        }
         internal void addAddon(string name)
         {
             if (activeAddons == null)
@@ -719,7 +874,7 @@ namespace BRModTools
             //File.Copy(location+@"\Content",modLocation+@"\Vanilla");
             CopyFolder.CopyAll(new DirectoryInfo(location+@"\Content"), new DirectoryInfo(modLocation + @"\Vanilla"));
             mods.Add(new Mod("Vanilla", modLocation + @"\Vanilla"));
-            String output = ModWriter.writeInfo("Vanilla");
+            String output = ModWriter.writeInfo("Vanilla",new ArrayList());
 
             FileStream fs = File.Create(modLocation+@"\ModInfo.xml");
             StreamWriter file = new StreamWriter(fs);
@@ -817,16 +972,11 @@ namespace BRModTools
             return mod.getTable();
         }
 
-        internal void Activate(string selected)
+        public  void Activate(string selected)
         {
             Mod newMod = getMod(selected);
             Directory.Delete(location + @"\Content",true);
             CopyFolder.CopyAll(new DirectoryInfo(newMod.location), new DirectoryInfo(location+@"\Content"));
-            String modInfo = ModWriter.writeInfo(newMod.Name);
-            FileStream fs = File.Create(modLocation + @"\ModInfo.xml");
-            StreamWriter file = new StreamWriter(fs);
-            file.WriteLine(modInfo);
-            file.Close();
             activeMod = newMod;
         }
     }
@@ -1096,6 +1246,7 @@ namespace BRModTools
                 String actualName = Path.GetFileNameWithoutExtension(file.Name);
                 actualName=actualName.Replace("-diffuse", "");
                 Texture texture = new Texture(bitmap, file.Name);
+                texture = new Texture(file.DirectoryName, actualName);
                 images.Add(texture);
                 // Texture2D.FromStream(gds.GraphicsDevice, 
                 //images.Add(DevIL.DevIL.LoadBitmap(file.FullName));
@@ -1118,7 +1269,15 @@ namespace BRModTools
             }
             return new Bitmap(256, 256); ;//TODO Add error image;
         }
-
+        public List<String> getTextureNames()
+        {
+            List<String> names = new List<String>();
+            foreach (Texture texture in images)
+            {
+                names.Add(texture.Name);
+            }
+            return names;
+        }
         public ArrayList getImages()
         {
 
@@ -1137,8 +1296,10 @@ namespace BRModTools
     public class Texture
     {
         public Image Image { get; set; }
+        public Image Specular {get;set;}
         public String Name { get; set; }
         public String RealName { get; set; }
+        public String Path { get; set; }
         public Texture(Image image, String name)
         {
             this.Image = image;
@@ -1146,29 +1307,18 @@ namespace BRModTools
         }
         public Texture(String path, String name)
         {
-            String textureFile = path+"\\"+name+"-diffuse.dds";
+            Path = path+"\\"+name;
+            Name = name;
             try
             {
-                Image = ImageTools.DDSDataToBMP(File.ReadAllBytes(textureFile));
+                Image = ImageTools.DDSDataToBMP(File.ReadAllBytes(Path+@"-diffuse.dds"));
+                Specular= ImageTools.DDSDataToBMP(File.ReadAllBytes(Path+"-special.dds"));
             }
             catch (Exception)
             {
                 Image = null;
+                Specular=null;
             }
-            /*DirectoryInfo dir = new DirectoryInfo(path);
-            FileInfo[] files = dir.GetFiles("*diffuse.dds");
-            foreach (FileInfo file in files)
-            {
-                String actualName = Path.GetFileNameWithoutExtension(file.Name);
-                actualName = actualName.Replace("-diffuse", "");
-                if (actualName == name)
-                {
-                    File.ReadAllBytes(file.FullName);
-                    Image = ImageTools.DDSDataToBMP(File.ReadAllBytes(file.FullName));
-                    name = file.Name;
-                    RealName = actualName;
-                }
-            }*/
         }
     }
     public static class CopyFolder

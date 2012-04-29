@@ -307,6 +307,7 @@ namespace BRModTools
             this.activeDeactiveAddon.TabIndex = 6;
             this.activeDeactiveAddon.Text = "Activate/Deactive Addon";
             this.activeDeactiveAddon.UseVisualStyleBackColor = true;
+            this.activeDeactiveAddon.Click += new System.EventHandler(this.activeDeactiveAddon_Click);
             // 
             // renameAddon
             // 
@@ -355,9 +356,8 @@ namespace BRModTools
             this.selectAddonBox.Name = "selectAddonBox";
             this.selectAddonBox.Size = new System.Drawing.Size(192, 186);
             this.selectAddonBox.TabIndex = 1;
-            this.selectAddonBox.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             this.selectAddonBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.DrawAddonItemHandler);
-
+            this.selectAddonBox.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             // 
             // Main
             // 

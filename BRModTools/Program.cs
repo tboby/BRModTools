@@ -141,12 +141,45 @@ namespace BRModTools
             output += "</Solids>";
             return output;
         }
+        public static String addonTable(DataTable data,String addonName)
+        {
+            String output = "";
+            String[] attributes = new String[data.Columns.Count];
+            for (int i = 0; i < attributes.Length; i++)
+            {
+                attributes[i] = data.Columns[i].Caption;
+            }
+            foreach (DataRow row in data.Rows)
+            {
+                output += "     <" + row["Name"] + " ";
+                foreach (String attribute in attributes)
+                {
+                    if (attribute == "TexturePath")
+                    {
+                        output += attribute + "=\"" + addonName + "-" + row[attribute] + "\" ";
+                    }
+                    else if (attribute != "Name")
+                    {
+                        output += attribute + "=\"" + row[attribute] + "\" ";
+                    }
+                }
+                output += "/>\r\n";
+            }
+            return output;
+        }
         //TODO: Make it more xml automatic
-        internal static String writeInfo(string activeMod)
+        internal static String writeInfo(string activeMod,ArrayList activeAddons)
         {
             String output = "<?xml version=\"1.0\"?>\r\n<ModInfo>\r\n<ActiveMod Name=\"";
-            output += activeMod;
-            output+="\"/>\r\n</ModInfo>";
+            output += activeMod+"\"/>\r\n";
+            if (activeAddons != null)
+            {
+                foreach (String addon in activeAddons)
+                {
+                    output += "<ActiveAddon Name=\"" + addon + "\"/>\r\n";
+                }
+            }
+            output+="</ModInfo>";
             return output;
         }
     }

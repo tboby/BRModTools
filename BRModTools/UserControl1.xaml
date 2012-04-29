@@ -35,8 +35,8 @@
     </UserControl.DataContext>-->
     <UserControl.Background>
         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-            <GradientStop Color="Yellow" Offset="0"/>
-            <GradientStop Color="Red" Offset="1"/>
+            <GradientStop Color="#FF003AFF" Offset="0"/>
+            <GradientStop Color="#FF00F3FF" Offset="1"/>
         </LinearGradientBrush>
     </UserControl.Background>
 
